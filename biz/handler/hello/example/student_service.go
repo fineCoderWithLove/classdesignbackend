@@ -10,22 +10,6 @@ import (
 	"github.com/cloudwego/hertz/pkg/protocol/consts"
 )
 
-// HelloMethod .
-// @router /hello [GET]
-func HelloMethod(ctx context.Context, c *app.RequestContext) {
-	var err error
-	var req example.HelloReq
-	err = c.BindAndValidate(&req)
-	if err != nil {
-		c.String(consts.StatusBadRequest, err.Error())
-		return
-	}
-
-	resp := new(example.HelloResp)
-
-	c.JSON(consts.StatusOK, resp)
-}
-
 // Hello .
 // @router /hello [GET]
 func Hello(ctx context.Context, c *app.RequestContext) {

@@ -35,3 +35,13 @@ func _registerMw() []app.HandlerFunc {
 	// your code...
 	return nil
 }
+
+func _personMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _querypersondetailMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
