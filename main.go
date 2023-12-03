@@ -3,12 +3,16 @@
 package main
 
 import (
+	"classbackend/db"
 	"github.com/cloudwego/hertz/pkg/app/server"
+	"go.uber.org/zap"
 )
 
 func main() {
 	h := server.Default()
-
+	logger, _ := zap.NewDevelopment()
+	zap.ReplaceGlobals(logger) //日志初始化
+	db.Init()                  //数据库初始化
 	register(h)
 	h.Spin()
 }
