@@ -10,14 +10,19 @@ package enum
 //	----------------------------------------------------------
 //	  服务级错误码          模块级错误码	         具体错误码
 //	----------------------------------------------------------
-type Code uint32
+type Code int64
+type Msg string
 
 var (
-	// OK
-	OK               Code = 200 // 成功
-	Error            Code = 500 // 错误
-	NoAuthentication Code = 403 // 未鉴权
-	NetWorkError     Code = 501 // 网络错误
+	// Code
+	OK               int64 = 200 // 成功
+	Error            int64 = 500 // 错误
+	NoAuthentication int64 = 403 // 未鉴权
+	NetWorkError     int64 = 501 // 网络错误
 
-	// ......
+	// Msg
+	Success     string = "success"
+	Fail        string = "fail"
+	NoUserID    string = "用户id不正确"
+	SystemError string = "系统异常"
 )

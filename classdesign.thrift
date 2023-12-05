@@ -22,7 +22,7 @@ struct LoginResp {
 }
 //2注册的请求
 struct RegisterReq {
-    1: string number (api.query="number"); // 添加 api 注解为方便进行参数绑定
+    1: string user_name (api.query="userName"); // 添加 api 注解为方便进行参数绑定
     2: string password (api.query="password"); // 添加 api 注解为方便进行参数绑定
 }
 
@@ -72,8 +72,41 @@ service TeacherService {
      2: i64 code;
      3: User user;
  }
+ //2.添加学生/老师
+  struct AddStudentReq {
+      1: string token (api.query="token"); // 添加 api 注解为方便进行参数绑定
+      2: Student student (api.query="student");
+  }
+
+  struct AddStudentResp {
+      1: string msg;
+      2: i64 code;
+  }
+ //3.删除学生/老师
+  struct DelStudentReq {
+      1: string token (api.query="token"); // 添加 api 注解为方便进行参数绑定
+      2: Student student (api.query="student");
+  }
+
+  struct DelStudentResp {
+      1: string msg;
+      2: i64 code;
+  }
+   //3.删除学生/老师
+    struct UpdateStudentReq {
+        1: string token (api.query="token"); // 添加 api 注解为方便进行参数绑定
+        2: Student student (api.query="student");
+    }
+
+    struct UpdateStudentResp {
+        1: string msg;
+        2: i64 code;
+    }
  service AdminService {
         QueryPersonDetailResp QueryPersonDetail(1: QueryPersonDetailReq request) (api.get="/person/details");
+        AddStudentResp AddPerson(1: AddStudentReq request) (api.get="/person/add");
+        DelStudentResp DelPerson(1: DelStudentReq request) (api.get="/person/del");
+        UpdateStudentResp UpdatePerson(1: UpdateStudentReq request) (api.get="/person/update");
  }
  struct User {
      1:i64 user_id;

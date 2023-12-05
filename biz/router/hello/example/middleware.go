@@ -45,3 +45,28 @@ func _querypersondetailMw() []app.HandlerFunc {
 	// your code...
 	return nil
 }
+
+func _addstudentMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _delstudentMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _addpersonMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _delpersonMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _updatepersonMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}

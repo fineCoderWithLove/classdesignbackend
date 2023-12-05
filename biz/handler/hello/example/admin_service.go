@@ -3,7 +3,10 @@
 package example
 
 import (
+	"classbackend/db"
+	"classbackend/enum"
 	"context"
+	"go.uber.org/zap"
 
 	example "classbackend/biz/model/hello/example"
 	"github.com/cloudwego/hertz/pkg/app"
@@ -16,12 +19,108 @@ func QueryPersonDetail(ctx context.Context, c *app.RequestContext) {
 	var err error
 	var req example.QueryPersonDetailReq
 	err = c.BindAndValidate(&req)
+	//参数校验
+	if err != nil {
+		c.String(consts.StatusBadRequest, err.Error())
+		return
+	}
+	resp := example.QueryPersonDetailResp{
+		Msg:  enum.Success,
+		Code: enum.OK,
+		User: nil,
+	}
+	res := db.DB.Table("login").Where("user_id = ?", req.UserID).Find(&resp.User)
+	if res.RowsAffected == 0 {
+		zap.S().Error(enum.NoUserID)
+		c.JSON(consts.StatusOK, example.QueryPersonDetailResp{
+			Msg:  enum.Fail,
+			Code: enum.Error,
+			User: nil,
+		})
+		return
+	}
+	c.JSON(consts.StatusOK, resp)
+}
+
+/*
+	删除老师或者学生只需要通过权限来判断
+*/
+// AddStudent .
+// @router /person/add [GET]
+func AddStudent(ctx context.Context, c *app.RequestContext) {
+	var err error
+	var req example.AddStudentReq
+	err = c.BindAndValidate(&req)
 	if err != nil {
 		c.String(consts.StatusBadRequest, err.Error())
 		return
 	}
 
-	resp := new(example.QueryPersonDetailResp)
+	resp := new(example.AddStudentResp)
+
+	c.JSON(consts.StatusOK, resp)
+}
+
+// DelStudent .
+// @router /person/del [GET]
+func DelStudent(ctx context.Context, c *app.RequestContext) {
+	var err error
+	var req example.DelStudentReq
+	err = c.BindAndValidate(&req)
+	if err != nil {
+		c.String(consts.StatusBadRequest, err.Error())
+		return
+	}
+
+	resp := new(example.DelStudentResp)
+
+	c.JSON(consts.StatusOK, resp)
+}
+
+// AddPerson .
+// @router /person/add [GET]
+func AddPerson(ctx context.Context, c *app.RequestContext) {
+	var err error
+	var req example.AddStudentReq
+	err = c.BindAndValidate(&req)
+	if err != nil {
+		c.String(consts.StatusBadRequest, err.Error())
+		return
+	}
+
+	resp := new(example.AddStudentResp)
+
+	c.JSON(consts.StatusOK, resp)
+}
+
+// DelPerson .
+// @router /person/del [GET]
+func DelPerson(ctx context.Context, c *app.RequestContext) {
+	var err error
+	var req example.DelStudentReq
+	err = c.BindAndValidate(&req)
+	if err != nil {
+		c.String(consts.StatusBadRequest, err.Error())
+		return
+	}
+
+	resp := new(example.DelStudentResp)
+
+	c.JSON(consts.StatusOK, resp)
+}
+
+// UpdatePerson .
+// @router /person/update [GET]
+func UpdatePerson(ctx context.Context, c *app.RequestContext) {
+	var err error
+	var req example.UpdateStudentReq
+	err = c.BindAndValidate(&req)
+	if err != nil {
+		c.String(consts.StatusBadRequest, err.Error())
+		return
+	}
+
+	resp := new(example.UpdateStudentResp)
 
 	c.JSON(consts.StatusOK, resp)
 }
