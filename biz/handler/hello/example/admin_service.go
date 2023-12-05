@@ -3,14 +3,15 @@
 package example
 
 import (
+	example "classbackend/biz/model/hello/example"
 	"classbackend/db"
 	"classbackend/enum"
 	"context"
-	"go.uber.org/zap"
-
-	example "classbackend/biz/model/hello/example"
+	"fmt"
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/protocol/consts"
+	"go.uber.org/zap"
+	"time"
 )
 
 // QueryPersonDetail .
@@ -45,51 +46,33 @@ func QueryPersonDetail(ctx context.Context, c *app.RequestContext) {
 /*
 	删除老师或者学生只需要通过权限来判断
 */
-// AddStudent .
-// @router /person/add [GET]
-func AddStudent(ctx context.Context, c *app.RequestContext) {
-	var err error
-	var req example.AddStudentReq
-	err = c.BindAndValidate(&req)
-	if err != nil {
-		c.String(consts.StatusBadRequest, err.Error())
-		return
-	}
-
-	resp := new(example.AddStudentResp)
-
-	c.JSON(consts.StatusOK, resp)
-}
-
-// DelStudent .
-// @router /person/del [GET]
-func DelStudent(ctx context.Context, c *app.RequestContext) {
-	var err error
-	var req example.DelStudentReq
-	err = c.BindAndValidate(&req)
-	if err != nil {
-		c.String(consts.StatusBadRequest, err.Error())
-		return
-	}
-
-	resp := new(example.DelStudentResp)
-
-	c.JSON(consts.StatusOK, resp)
-}
-
 // AddPerson .
 // @router /person/add [GET]
 func AddPerson(ctx context.Context, c *app.RequestContext) {
 	var err error
 	var req example.AddStudentReq
 	err = c.BindAndValidate(&req)
+	timestamp := time.Now().UnixNano() / int64(time.Millisecond)
+	lastTenDigits := fmt.Sprintf("%010d", timestamp)
+	stringLastTenDigits := lastTenDigits[len(lastTenDigits)-10:]
+	err = c.BindAndValidate(&req)
+	user := example.Person{UserName: req.Person.UserName, Password: `123456`, Number: stringLastTenDigits, Role: 1, Gender: req.Person.Gender}
 	if err != nil {
 		c.String(consts.StatusBadRequest, err.Error())
 		return
 	}
-
+	res := db.DB.Table("login").Create(&user)
+	if res.RowsAffected == 0 {
+		zap.S().Error(enum.SystemError)
+		c.JSON(consts.StatusOK, example.AddStudentResp{
+			Msg:  enum.SystemError,
+			Code: enum.Error,
+		})
+		return
+	}
 	resp := new(example.AddStudentResp)
-
+	resp.Msg = enum.Success
+	resp.Code = enum.OK
 	c.JSON(consts.StatusOK, resp)
 }
 
@@ -103,9 +86,18 @@ func DelPerson(ctx context.Context, c *app.RequestContext) {
 		c.String(consts.StatusBadRequest, err.Error())
 		return
 	}
-
+	res := db.DB.Table("login").Delete(&example.Person{}, req.UserID)
+	if res.RowsAffected == 0 {
+		zap.S().Error(enum.NoUserID)
+		c.JSON(consts.StatusOK, example.DelStudentResp{
+			Msg:  enum.Fail,
+			Code: enum.Error,
+		})
+		return
+	}
 	resp := new(example.DelStudentResp)
-
+	resp.Msg = enum.Success
+	resp.Code = enum.OK
 	c.JSON(consts.StatusOK, resp)
 }
 
@@ -119,8 +111,17 @@ func UpdatePerson(ctx context.Context, c *app.RequestContext) {
 		c.String(consts.StatusBadRequest, err.Error())
 		return
 	}
-
+	res := db.DB.Table("login").Where("user_id = ?", req.Person.UserID).Save(&req.Person)
+	if res.RowsAffected == 0 {
+		zap.S().Error(enum.NoUserID)
+		c.JSON(consts.StatusOK, example.UpdateStudentResp{
+			Msg:  enum.Fail,
+			Code: enum.Error,
+		})
+		return
+	}
 	resp := new(example.UpdateStudentResp)
-
+	resp.Msg = enum.Success
+	resp.Code = enum.OK
 	c.JSON(consts.StatusOK, resp)
 }

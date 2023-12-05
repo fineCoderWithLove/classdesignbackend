@@ -63,8 +63,8 @@ service TeacherService {
  //=======================================>4.个人服务信息的服务信息<=============================================================
  //1.查询个人详情
  struct QueryPersonDetailReq {
-     1: string token (api.query="token"); // 添加 api 注解为方便进行参数绑定
-     2: i64 user_id (api.query="userId");
+     1: string token (api.body="token"); // 添加 api 注解为方便进行参数绑定
+     2: i64 user_id (api.body="userId");
  }
 
  struct QueryPersonDetailResp {
@@ -75,7 +75,7 @@ service TeacherService {
  //2.添加学生/老师
   struct AddStudentReq {
       1: string token (api.query="token"); // 添加 api 注解为方便进行参数绑定
-      2: Student student (api.query="student");
+      2: Person person (api.query="person");
   }
 
   struct AddStudentResp {
@@ -85,17 +85,17 @@ service TeacherService {
  //3.删除学生/老师
   struct DelStudentReq {
       1: string token (api.query="token"); // 添加 api 注解为方便进行参数绑定
-      2: Student student (api.query="student");
+        2: i64 user_id (api.query="userId");
   }
 
   struct DelStudentResp {
       1: string msg;
       2: i64 code;
   }
-   //3.删除学生/老师
+   //3.更新学生/老师
     struct UpdateStudentReq {
-        1: string token (api.query="token"); // 添加 api 注解为方便进行参数绑定
-        2: Student student (api.query="student");
+        1: string token (api.body="token"); // 添加 api 注解为方便进行参数绑定
+        2: Person person (api.body="person");
     }
 
     struct UpdateStudentResp {
@@ -104,10 +104,20 @@ service TeacherService {
     }
  service AdminService {
         QueryPersonDetailResp QueryPersonDetail(1: QueryPersonDetailReq request) (api.get="/person/details");
-        AddStudentResp AddPerson(1: AddStudentReq request) (api.get="/person/add");
+        AddStudentResp AddPerson(1: AddStudentReq request) (api.post="/person/add");
         DelStudentResp DelPerson(1: DelStudentReq request) (api.get="/person/del");
-        UpdateStudentResp UpdatePerson(1: UpdateStudentReq request) (api.get="/person/update");
+        UpdateStudentResp UpdatePerson(1: UpdateStudentReq request) (api.post="/person/update");
  }
+  struct Person {
+      1:i64 user_id;
+      2:string  user_name;
+      3:string  password;
+      4:string avatar;
+      5:i64 role;
+      6:string number;
+      7:string email;
+      8:string gender;
+  }
  struct User {
      1:i64 user_id;
      2:string  user_name;
