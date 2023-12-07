@@ -8347,7 +8347,7 @@ func (p *StudentServiceClient) QueryStudents(ctx context.Context, request *Query
 }
 
 type TeacherService interface {
-	RateScoreReq(ctx context.Context, request *RateScoreReq) (r *RateScoreResp, err error)
+	RateScore(ctx context.Context, request *RateScoreReq) (r *RateScoreResp, err error)
 
 	SelectMyTechCourse(ctx context.Context, request *SelectMyTechCourseReq) (r *SelectMyTechCourseResp, err error)
 
@@ -8382,11 +8382,11 @@ func (p *TeacherServiceClient) Client_() thrift.TClient {
 	return p.c
 }
 
-func (p *TeacherServiceClient) RateScoreReq(ctx context.Context, request *RateScoreReq) (r *RateScoreResp, err error) {
-	var _args TeacherServiceRateScoreReqArgs
+func (p *TeacherServiceClient) RateScore(ctx context.Context, request *RateScoreReq) (r *RateScoreResp, err error) {
+	var _args TeacherServiceRateScoreArgs
 	_args.Request = request
-	var _result TeacherServiceRateScoreReqResult
-	if err = p.Client_().Call(ctx, "RateScoreReq", &_args, &_result); err != nil {
+	var _result TeacherServiceRateScoreResult
+	if err = p.Client_().Call(ctx, "RateScore", &_args, &_result); err != nil {
 		return
 	}
 	return _result.GetSuccess(), nil
@@ -9927,7 +9927,7 @@ func (p *TeacherServiceProcessor) ProcessorMap() map[string]thrift.TProcessorFun
 
 func NewTeacherServiceProcessor(handler TeacherService) *TeacherServiceProcessor {
 	self := &TeacherServiceProcessor{handler: handler, processorMap: make(map[string]thrift.TProcessorFunction)}
-	self.AddToProcessorMap("RateScoreReq", &teacherServiceProcessorRateScoreReq{handler: handler})
+	self.AddToProcessorMap("RateScore", &teacherServiceProcessorRateScore{handler: handler})
 	self.AddToProcessorMap("SelectMyTechCourse", &teacherServiceProcessorSelectMyTechCourse{handler: handler})
 	self.AddToProcessorMap("SelectClassByCourseId", &teacherServiceProcessorSelectClassByCourseId{handler: handler})
 	self.AddToProcessorMap("SelectClassStu", &teacherServiceProcessorSelectClassStu{handler: handler})
@@ -9951,16 +9951,16 @@ func (p *TeacherServiceProcessor) Process(ctx context.Context, iprot, oprot thri
 	return false, x
 }
 
-type teacherServiceProcessorRateScoreReq struct {
+type teacherServiceProcessorRateScore struct {
 	handler TeacherService
 }
 
-func (p *teacherServiceProcessorRateScoreReq) Process(ctx context.Context, seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
-	args := TeacherServiceRateScoreReqArgs{}
+func (p *teacherServiceProcessorRateScore) Process(ctx context.Context, seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
+	args := TeacherServiceRateScoreArgs{}
 	if err = args.Read(iprot); err != nil {
 		iprot.ReadMessageEnd()
 		x := thrift.NewTApplicationException(thrift.PROTOCOL_ERROR, err.Error())
-		oprot.WriteMessageBegin("RateScoreReq", thrift.EXCEPTION, seqId)
+		oprot.WriteMessageBegin("RateScore", thrift.EXCEPTION, seqId)
 		x.Write(oprot)
 		oprot.WriteMessageEnd()
 		oprot.Flush(ctx)
@@ -9969,11 +9969,11 @@ func (p *teacherServiceProcessorRateScoreReq) Process(ctx context.Context, seqId
 
 	iprot.ReadMessageEnd()
 	var err2 error
-	result := TeacherServiceRateScoreReqResult{}
+	result := TeacherServiceRateScoreResult{}
 	var retval *RateScoreResp
-	if retval, err2 = p.handler.RateScoreReq(ctx, args.Request); err2 != nil {
-		x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing RateScoreReq: "+err2.Error())
-		oprot.WriteMessageBegin("RateScoreReq", thrift.EXCEPTION, seqId)
+	if retval, err2 = p.handler.RateScore(ctx, args.Request); err2 != nil {
+		x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing RateScore: "+err2.Error())
+		oprot.WriteMessageBegin("RateScore", thrift.EXCEPTION, seqId)
 		x.Write(oprot)
 		oprot.WriteMessageEnd()
 		oprot.Flush(ctx)
@@ -9981,7 +9981,7 @@ func (p *teacherServiceProcessorRateScoreReq) Process(ctx context.Context, seqId
 	} else {
 		result.Success = retval
 	}
-	if err2 = oprot.WriteMessageBegin("RateScoreReq", thrift.REPLY, seqId); err2 != nil {
+	if err2 = oprot.WriteMessageBegin("RateScore", thrift.REPLY, seqId); err2 != nil {
 		err = err2
 	}
 	if err2 = result.Write(oprot); err == nil && err2 != nil {
@@ -10143,32 +10143,32 @@ func (p *teacherServiceProcessorSelectClassStu) Process(ctx context.Context, seq
 	return true, err
 }
 
-type TeacherServiceRateScoreReqArgs struct {
+type TeacherServiceRateScoreArgs struct {
 	Request *RateScoreReq `thrift:"request,1"`
 }
 
-func NewTeacherServiceRateScoreReqArgs() *TeacherServiceRateScoreReqArgs {
-	return &TeacherServiceRateScoreReqArgs{}
+func NewTeacherServiceRateScoreArgs() *TeacherServiceRateScoreArgs {
+	return &TeacherServiceRateScoreArgs{}
 }
 
-var TeacherServiceRateScoreReqArgs_Request_DEFAULT *RateScoreReq
+var TeacherServiceRateScoreArgs_Request_DEFAULT *RateScoreReq
 
-func (p *TeacherServiceRateScoreReqArgs) GetRequest() (v *RateScoreReq) {
+func (p *TeacherServiceRateScoreArgs) GetRequest() (v *RateScoreReq) {
 	if !p.IsSetRequest() {
-		return TeacherServiceRateScoreReqArgs_Request_DEFAULT
+		return TeacherServiceRateScoreArgs_Request_DEFAULT
 	}
 	return p.Request
 }
 
-var fieldIDToName_TeacherServiceRateScoreReqArgs = map[int16]string{
+var fieldIDToName_TeacherServiceRateScoreArgs = map[int16]string{
 	1: "request",
 }
 
-func (p *TeacherServiceRateScoreReqArgs) IsSetRequest() bool {
+func (p *TeacherServiceRateScoreArgs) IsSetRequest() bool {
 	return p.Request != nil
 }
 
-func (p *TeacherServiceRateScoreReqArgs) Read(iprot thrift.TProtocol) (err error) {
+func (p *TeacherServiceRateScoreArgs) Read(iprot thrift.TProtocol) (err error) {
 
 	var fieldTypeId thrift.TType
 	var fieldId int16
@@ -10217,7 +10217,7 @@ ReadStructBeginError:
 ReadFieldBeginError:
 	return thrift.PrependError(fmt.Sprintf("%T read field %d begin error: ", p, fieldId), err)
 ReadFieldError:
-	return thrift.PrependError(fmt.Sprintf("%T read field %d '%s' error: ", p, fieldId, fieldIDToName_TeacherServiceRateScoreReqArgs[fieldId]), err)
+	return thrift.PrependError(fmt.Sprintf("%T read field %d '%s' error: ", p, fieldId, fieldIDToName_TeacherServiceRateScoreArgs[fieldId]), err)
 SkipFieldError:
 	return thrift.PrependError(fmt.Sprintf("%T field %d skip type %d error: ", p, fieldId, fieldTypeId), err)
 
@@ -10227,7 +10227,7 @@ ReadStructEndError:
 	return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
 }
 
-func (p *TeacherServiceRateScoreReqArgs) ReadField1(iprot thrift.TProtocol) error {
+func (p *TeacherServiceRateScoreArgs) ReadField1(iprot thrift.TProtocol) error {
 	p.Request = NewRateScoreReq()
 	if err := p.Request.Read(iprot); err != nil {
 		return err
@@ -10235,9 +10235,9 @@ func (p *TeacherServiceRateScoreReqArgs) ReadField1(iprot thrift.TProtocol) erro
 	return nil
 }
 
-func (p *TeacherServiceRateScoreReqArgs) Write(oprot thrift.TProtocol) (err error) {
+func (p *TeacherServiceRateScoreArgs) Write(oprot thrift.TProtocol) (err error) {
 	var fieldId int16
-	if err = oprot.WriteStructBegin("RateScoreReq_args"); err != nil {
+	if err = oprot.WriteStructBegin("RateScore_args"); err != nil {
 		goto WriteStructBeginError
 	}
 	if p != nil {
@@ -10264,7 +10264,7 @@ WriteStructEndError:
 	return thrift.PrependError(fmt.Sprintf("%T write struct end error: ", p), err)
 }
 
-func (p *TeacherServiceRateScoreReqArgs) writeField1(oprot thrift.TProtocol) (err error) {
+func (p *TeacherServiceRateScoreArgs) writeField1(oprot thrift.TProtocol) (err error) {
 	if err = oprot.WriteFieldBegin("request", thrift.STRUCT, 1); err != nil {
 		goto WriteFieldBeginError
 	}
@@ -10281,39 +10281,39 @@ WriteFieldEndError:
 	return thrift.PrependError(fmt.Sprintf("%T write field 1 end error: ", p), err)
 }
 
-func (p *TeacherServiceRateScoreReqArgs) String() string {
+func (p *TeacherServiceRateScoreArgs) String() string {
 	if p == nil {
 		return "<nil>"
 	}
-	return fmt.Sprintf("TeacherServiceRateScoreReqArgs(%+v)", *p)
+	return fmt.Sprintf("TeacherServiceRateScoreArgs(%+v)", *p)
 }
 
-type TeacherServiceRateScoreReqResult struct {
+type TeacherServiceRateScoreResult struct {
 	Success *RateScoreResp `thrift:"success,0,optional"`
 }
 
-func NewTeacherServiceRateScoreReqResult() *TeacherServiceRateScoreReqResult {
-	return &TeacherServiceRateScoreReqResult{}
+func NewTeacherServiceRateScoreResult() *TeacherServiceRateScoreResult {
+	return &TeacherServiceRateScoreResult{}
 }
 
-var TeacherServiceRateScoreReqResult_Success_DEFAULT *RateScoreResp
+var TeacherServiceRateScoreResult_Success_DEFAULT *RateScoreResp
 
-func (p *TeacherServiceRateScoreReqResult) GetSuccess() (v *RateScoreResp) {
+func (p *TeacherServiceRateScoreResult) GetSuccess() (v *RateScoreResp) {
 	if !p.IsSetSuccess() {
-		return TeacherServiceRateScoreReqResult_Success_DEFAULT
+		return TeacherServiceRateScoreResult_Success_DEFAULT
 	}
 	return p.Success
 }
 
-var fieldIDToName_TeacherServiceRateScoreReqResult = map[int16]string{
+var fieldIDToName_TeacherServiceRateScoreResult = map[int16]string{
 	0: "success",
 }
 
-func (p *TeacherServiceRateScoreReqResult) IsSetSuccess() bool {
+func (p *TeacherServiceRateScoreResult) IsSetSuccess() bool {
 	return p.Success != nil
 }
 
-func (p *TeacherServiceRateScoreReqResult) Read(iprot thrift.TProtocol) (err error) {
+func (p *TeacherServiceRateScoreResult) Read(iprot thrift.TProtocol) (err error) {
 
 	var fieldTypeId thrift.TType
 	var fieldId int16
@@ -10362,7 +10362,7 @@ ReadStructBeginError:
 ReadFieldBeginError:
 	return thrift.PrependError(fmt.Sprintf("%T read field %d begin error: ", p, fieldId), err)
 ReadFieldError:
-	return thrift.PrependError(fmt.Sprintf("%T read field %d '%s' error: ", p, fieldId, fieldIDToName_TeacherServiceRateScoreReqResult[fieldId]), err)
+	return thrift.PrependError(fmt.Sprintf("%T read field %d '%s' error: ", p, fieldId, fieldIDToName_TeacherServiceRateScoreResult[fieldId]), err)
 SkipFieldError:
 	return thrift.PrependError(fmt.Sprintf("%T field %d skip type %d error: ", p, fieldId, fieldTypeId), err)
 
@@ -10372,7 +10372,7 @@ ReadStructEndError:
 	return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
 }
 
-func (p *TeacherServiceRateScoreReqResult) ReadField0(iprot thrift.TProtocol) error {
+func (p *TeacherServiceRateScoreResult) ReadField0(iprot thrift.TProtocol) error {
 	p.Success = NewRateScoreResp()
 	if err := p.Success.Read(iprot); err != nil {
 		return err
@@ -10380,9 +10380,9 @@ func (p *TeacherServiceRateScoreReqResult) ReadField0(iprot thrift.TProtocol) er
 	return nil
 }
 
-func (p *TeacherServiceRateScoreReqResult) Write(oprot thrift.TProtocol) (err error) {
+func (p *TeacherServiceRateScoreResult) Write(oprot thrift.TProtocol) (err error) {
 	var fieldId int16
-	if err = oprot.WriteStructBegin("RateScoreReq_result"); err != nil {
+	if err = oprot.WriteStructBegin("RateScore_result"); err != nil {
 		goto WriteStructBeginError
 	}
 	if p != nil {
@@ -10409,7 +10409,7 @@ WriteStructEndError:
 	return thrift.PrependError(fmt.Sprintf("%T write struct end error: ", p), err)
 }
 
-func (p *TeacherServiceRateScoreReqResult) writeField0(oprot thrift.TProtocol) (err error) {
+func (p *TeacherServiceRateScoreResult) writeField0(oprot thrift.TProtocol) (err error) {
 	if p.IsSetSuccess() {
 		if err = oprot.WriteFieldBegin("success", thrift.STRUCT, 0); err != nil {
 			goto WriteFieldBeginError
@@ -10428,11 +10428,11 @@ WriteFieldEndError:
 	return thrift.PrependError(fmt.Sprintf("%T write field 0 end error: ", p), err)
 }
 
-func (p *TeacherServiceRateScoreReqResult) String() string {
+func (p *TeacherServiceRateScoreResult) String() string {
 	if p == nil {
 		return "<nil>"
 	}
-	return fmt.Sprintf("TeacherServiceRateScoreReqResult(%+v)", *p)
+	return fmt.Sprintf("TeacherServiceRateScoreResult(%+v)", *p)
 }
 
 type TeacherServiceSelectMyTechCourseArgs struct {

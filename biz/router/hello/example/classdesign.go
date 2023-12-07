@@ -34,6 +34,6 @@ func Register(r *server.Hertz) {
 		_tech.GET("/classstu", append(_selectclassstuMw(), example.SelectClassStu)...)
 		_tech.GET("/mycourse", append(_selectmytechcourseMw(), example.SelectMyTechCourse)...)
 		_tech.GET("/queryclass", append(_selectclassbycourseidMw(), example.SelectClassByCourseId)...)
-		_tech.POST("/score", append(_ratescorereqMw(), example.RateScoreReq)...)
+		_tech.POST("/score", append(_ratescoreMw(), example.RateScore)...)
 	}
 }

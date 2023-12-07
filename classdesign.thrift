@@ -93,7 +93,7 @@ struct SelectClassStuResp {
     3: list<RateItem> rateItem;
 }
 service TeacherService {
-    RateScoreResp RateScoreReq(1: RateScoreReq request) (api.post="/tech/score");
+    RateScoreResp RateScore(1: RateScoreReq request) (api.post="/tech/score");
     SelectMyTechCourseResp SelectMyTechCourse(1: SelectMyTechCourseReq request) (api.get="/tech/mycourse");
     SelectClassByCourseIdResp SelectClassByCourseId(1: SelectClassByCourseIdReq request) (api.get="/tech/queryclass");
     SelectClassStuResp SelectClassStu(1: SelectClassStuReq request) (api.get="/tech/classstu");

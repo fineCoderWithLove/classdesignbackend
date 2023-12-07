@@ -100,3 +100,8 @@ func _ratescorereqMw() []app.HandlerFunc {
 	// your code...
 	return nil
 }
+
+func _ratescoreMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}

@@ -9,22 +9,6 @@ import (
 	"github.com/cloudwego/hertz/pkg/protocol/consts"
 )
 
-// RateScoreReq .
-// @router /tech/score [POST]
-func RateScoreReq(ctx context.Context, c *app.RequestContext) {
-	var err error
-	var req example.RateScoreReq
-	err = c.BindAndValidate(&req)
-	if err != nil {
-		c.String(consts.StatusBadRequest, err.Error())
-		return
-	}
-
-	resp := new(example.RateScoreResp)
-
-	c.JSON(consts.StatusOK, resp)
-}
-
 // SelectMyTechCourse .
 // @router /tech/mycourse [GET]
 func SelectMyTechCourse(ctx context.Context, c *app.RequestContext) {
@@ -69,6 +53,22 @@ func SelectClassStu(ctx context.Context, c *app.RequestContext) {
 	}
 
 	resp := new(example.SelectClassStuResp)
+
+	c.JSON(consts.StatusOK, resp)
+}
+
+// RateScore .
+// @router /tech/score [POST]
+func RateScore(ctx context.Context, c *app.RequestContext) {
+	var err error
+	var req example.RateScoreReq
+	err = c.BindAndValidate(&req)
+	if err != nil {
+		c.String(consts.StatusBadRequest, err.Error())
+		return
+	}
+
+	resp := new(example.RateScoreResp)
 
 	c.JSON(consts.StatusOK, resp)
 }
