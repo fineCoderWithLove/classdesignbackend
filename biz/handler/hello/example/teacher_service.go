@@ -4,9 +4,13 @@ package example
 
 import (
 	example "classbackend/biz/model/hello/example"
+	"classbackend/db"
+	"classbackend/enum"
 	"context"
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/protocol/consts"
+	"go.uber.org/zap"
+	"log"
 )
 
 // SelectMyTechCourse .
@@ -15,13 +19,23 @@ func SelectMyTechCourse(ctx context.Context, c *app.RequestContext) {
 	var err error
 	var req example.SelectMyTechCourseReq
 	err = c.BindAndValidate(&req)
+	log.Println(req)
 	if err != nil {
-		c.String(consts.StatusBadRequest, err.Error())
+		log.Println(err.Error())
 		return
 	}
-
 	resp := new(example.SelectMyTechCourseResp)
-
+	subQuery := db.DB.Table("teachertech").Select("course_id").Where("user_id = ?", c.Query("userId"))
+	res := db.DB.Table("course").Where("course_id in (?)", subQuery).Find(&resp.Course)
+	if res.RowsAffected == 0 {
+		resp.Msg = enum.SystemError
+		resp.Code = enum.OK
+		resp.Course = nil
+		c.JSON(consts.StatusOK, resp)
+		return
+	}
+	resp.Msg = enum.Success
+	resp.Code = enum.OK
 	c.JSON(consts.StatusOK, resp)
 }
 
@@ -32,12 +46,20 @@ func SelectClassByCourseId(ctx context.Context, c *app.RequestContext) {
 	var req example.SelectClassByCourseIdReq
 	err = c.BindAndValidate(&req)
 	if err != nil {
-		c.String(consts.StatusBadRequest, err.Error())
+		zap.S().Error(err.Error())
 		return
 	}
-
 	resp := new(example.SelectClassByCourseIdResp)
-
+	subQuery := db.DB.Table("stuchoose").Select("user_id").Where("course_id = ?", c.Query("courseId"))
+	res := db.DB.Table("login").Select("distinct from_where").Where("user_id in (?)", subQuery).Find(&resp.FromWhere)
+	if res.RowsAffected == 0 {
+		resp.Msg = enum.SystemError
+		resp.Code = enum.Error
+		c.JSON(consts.StatusOK, resp)
+		return
+	}
+	resp.Msg = enum.Success
+	resp.Code = enum.OK
 	c.JSON(consts.StatusOK, resp)
 }
 
@@ -47,13 +69,27 @@ func SelectClassStu(ctx context.Context, c *app.RequestContext) {
 	var err error
 	var req example.SelectClassStuReq
 	err = c.BindAndValidate(&req)
+	log.Println(req)
 	if err != nil {
 		c.String(consts.StatusBadRequest, err.Error())
 		return
 	}
-
 	resp := new(example.SelectClassStuResp)
-
+	res := db.DB.Table("login").
+		Select("login.user_id, course.course_name, login.user_name, stuchoose.course_total_score, stuchoose.course_test, stuchoose.course_normal, stuchoose.course_id").
+		Joins("LEFT JOIN stuchoose ON login.user_id = stuchoose.user_id").
+		Joins("LEFT JOIN teachertech ON login.user_id = teachertech.user_id").
+		Joins("LEFT JOIN course ON stuchoose.course_id = course.course_id").
+		Where("login.from_where = ?", req.FromWhere).
+		Find(&resp.RateItem)
+	if res.RowsAffected == 0 {
+		resp.Msg = enum.SystemError
+		resp.Code = enum.Error
+		c.JSON(consts.StatusOK, resp)
+		return
+	}
+	resp.Msg = enum.Success
+	resp.Code = enum.OK
 	c.JSON(consts.StatusOK, resp)
 }
 
@@ -63,12 +99,26 @@ func RateScore(ctx context.Context, c *app.RequestContext) {
 	var err error
 	var req example.RateScoreReq
 	err = c.BindAndValidate(&req)
+	log.Println(req)
 	if err != nil {
 		c.String(consts.StatusBadRequest, err.Error())
 		return
 	}
-
 	resp := new(example.RateScoreResp)
-
+	res := db.DB.Table("stuchoose").
+		Where("user_id = ? AND course_id = ?", req.RateItem.UserID, req.RateItem.CourseID).
+		Updates(map[string]interface{}{
+			"course_total_score": req.RateItem.CourseTotalScore,
+			"course_test":        req.RateItem.CourseTest,
+			"course_normal":      req.RateItem.CourseNormal,
+		})
+	if res.RowsAffected == 0 {
+		resp.Msg = enum.SystemError
+		resp.Code = enum.Error
+		c.JSON(consts.StatusOK, resp)
+		return
+	}
+	resp.Msg = enum.Success
+	resp.Code = enum.OK
 	c.JSON(consts.StatusOK, resp)
 }

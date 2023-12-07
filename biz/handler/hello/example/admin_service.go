@@ -136,8 +136,36 @@ func SearchForPersonReq(ctx context.Context, c *app.RequestContext) {
 		c.String(consts.StatusBadRequest, err.Error())
 		return
 	}
-
 	resp := new(example.SearchForPersonResp)
 
+	if req.Role == "1" {
+		//学生查询
+		res := db.DB.Table("login").Where("user_name like ? and role = 1", req.UserName+"%").Find(&resp.Person)
+		if res.RowsAffected == 0 {
+			zap.S().Error(enum.NoUserID)
+			c.JSON(consts.StatusOK, example.UpdateStudentResp{
+				Msg:  enum.Fail,
+				Code: enum.Error,
+			})
+			return
+		}
+		resp := new(example.SearchForPersonResp)
+		resp.Msg = enum.Success
+		resp.Code = enum.OK
+	} else if req.Role == "2" {
+		//教师查询
+		res := db.DB.Table("login").Where("user_name like ? and role = 2", req.UserName+"%").Find(&resp.Person)
+		if res.RowsAffected == 0 {
+			zap.S().Error(enum.NoUserID)
+			c.JSON(consts.StatusOK, example.UpdateStudentResp{
+				Msg:  enum.Fail,
+				Code: enum.Error,
+			})
+			return
+		}
+		resp := new(example.SearchForPersonResp)
+		resp.Msg = enum.Success
+		resp.Code = enum.OK
+	}
 	c.JSON(consts.StatusOK, resp)
 }

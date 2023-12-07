@@ -52,7 +52,7 @@ service StudentService {
 //1.update某学生评分
 struct RateScoreReq {
     1: string token (api.body="token"); // 添加 api 注解为方便进行参数绑定
-    2: RateItem rateItem (api.body = "rateItem")
+    2: RateItem rateItem (api.body="rateItem");
 }
 
 struct RateScoreResp {
@@ -62,7 +62,7 @@ struct RateScoreResp {
 //2.查询自己所带的课程
 struct SelectMyTechCourseReq {
     1: string token (api.get="token"); // 添加 api 注解为方便进行参数绑定
-    2: i64 user_id (api.get = "userId")
+    2: i64 user_id (api.get="userId");
 }
 
 struct SelectMyTechCourseResp {
@@ -72,8 +72,8 @@ struct SelectMyTechCourseResp {
 }
 //3.根据课程id查询，课程内的班级
 struct SelectClassByCourseIdReq {
-    1: string token (api.body="token"); // 添加 api 注解为方便进行参数绑定
-    2: i64 course_id;
+    1: string token (api.get="token"); // 添加 api 注解为方便进行参数绑定
+    2: i64 course_id (api.get="courseId");
 }
 
 struct SelectClassByCourseIdResp {
@@ -151,11 +151,12 @@ service TeacherService {
     struct SearchForPersonReq {
         1: string token (api.query="token"); // 添加 api 注解为方便进行参数绑定
         2: string user_name (api.query="userName");
+        3: string role (api.query="role");
     }
     struct SearchForPersonResp {
         1: string msg;
         2: i64 code;
-        3: Person person;
+        3: list<Person> person;
     }
  service AdminService {
         QueryPersonDetailResp QueryPersonDetail(1: QueryPersonDetailReq request) (api.get="/person/details");

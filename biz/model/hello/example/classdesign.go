@@ -2313,7 +2313,7 @@ func (p *SelectMyTechCourseResp) String() string {
 // 3.根据课程id查询，课程内的班级
 type SelectClassByCourseIdReq struct {
 	// 添加 api 注解为方便进行参数绑定
-	Token    string `thrift:"token,1" form:"token" json:"token"`
+	Token    string `thrift:"token,1" form:"token" json:"token" query:"token"`
 	CourseID int64  `thrift:"course_id,2" form:"course_id" json:"course_id" query:"course_id"`
 }
 
@@ -4733,6 +4733,7 @@ type SearchForPersonReq struct {
 	// 添加 api 注解为方便进行参数绑定
 	Token    string `thrift:"token,1" json:"token" query:"token"`
 	UserName string `thrift:"user_name,2" json:"user_name" query:"userName"`
+	Role     string `thrift:"role,3" json:"role" query:"role"`
 }
 
 func NewSearchForPersonReq() *SearchForPersonReq {
@@ -4747,9 +4748,14 @@ func (p *SearchForPersonReq) GetUserName() (v string) {
 	return p.UserName
 }
 
+func (p *SearchForPersonReq) GetRole() (v string) {
+	return p.Role
+}
+
 var fieldIDToName_SearchForPersonReq = map[int16]string{
 	1: "token",
 	2: "user_name",
+	3: "role",
 }
 
 func (p *SearchForPersonReq) Read(iprot thrift.TProtocol) (err error) {
@@ -4784,6 +4790,16 @@ func (p *SearchForPersonReq) Read(iprot thrift.TProtocol) (err error) {
 		case 2:
 			if fieldTypeId == thrift.STRING {
 				if err = p.ReadField2(iprot); err != nil {
+					goto ReadFieldError
+				}
+			} else {
+				if err = iprot.Skip(fieldTypeId); err != nil {
+					goto SkipFieldError
+				}
+			}
+		case 3:
+			if fieldTypeId == thrift.STRING {
+				if err = p.ReadField3(iprot); err != nil {
 					goto ReadFieldError
 				}
 			} else {
@@ -4839,6 +4855,15 @@ func (p *SearchForPersonReq) ReadField2(iprot thrift.TProtocol) error {
 	return nil
 }
 
+func (p *SearchForPersonReq) ReadField3(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return err
+	} else {
+		p.Role = v
+	}
+	return nil
+}
+
 func (p *SearchForPersonReq) Write(oprot thrift.TProtocol) (err error) {
 	var fieldId int16
 	if err = oprot.WriteStructBegin("SearchForPersonReq"); err != nil {
@@ -4851,6 +4876,10 @@ func (p *SearchForPersonReq) Write(oprot thrift.TProtocol) (err error) {
 		}
 		if err = p.writeField2(oprot); err != nil {
 			fieldId = 2
+			goto WriteFieldError
+		}
+		if err = p.writeField3(oprot); err != nil {
+			fieldId = 3
 			goto WriteFieldError
 		}
 
@@ -4906,6 +4935,23 @@ WriteFieldEndError:
 	return thrift.PrependError(fmt.Sprintf("%T write field 2 end error: ", p), err)
 }
 
+func (p *SearchForPersonReq) writeField3(oprot thrift.TProtocol) (err error) {
+	if err = oprot.WriteFieldBegin("role", thrift.STRING, 3); err != nil {
+		goto WriteFieldBeginError
+	}
+	if err := oprot.WriteString(p.Role); err != nil {
+		return err
+	}
+	if err = oprot.WriteFieldEnd(); err != nil {
+		goto WriteFieldEndError
+	}
+	return nil
+WriteFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 3 begin error: ", p), err)
+WriteFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 3 end error: ", p), err)
+}
+
 func (p *SearchForPersonReq) String() string {
 	if p == nil {
 		return "<nil>"
@@ -4914,9 +4960,9 @@ func (p *SearchForPersonReq) String() string {
 }
 
 type SearchForPersonResp struct {
-	Msg    string  `thrift:"msg,1" form:"msg" json:"msg" query:"msg"`
-	Code   int64   `thrift:"code,2" form:"code" json:"code" query:"code"`
-	Person *Person `thrift:"person,3" form:"person" json:"person" query:"person"`
+	Msg    string    `thrift:"msg,1" form:"msg" json:"msg" query:"msg"`
+	Code   int64     `thrift:"code,2" form:"code" json:"code" query:"code"`
+	Person []*Person `thrift:"person,3" form:"person" json:"person" query:"person"`
 }
 
 func NewSearchForPersonResp() *SearchForPersonResp {
@@ -4931,12 +4977,7 @@ func (p *SearchForPersonResp) GetCode() (v int64) {
 	return p.Code
 }
 
-var SearchForPersonResp_Person_DEFAULT *Person
-
-func (p *SearchForPersonResp) GetPerson() (v *Person) {
-	if !p.IsSetPerson() {
-		return SearchForPersonResp_Person_DEFAULT
-	}
+func (p *SearchForPersonResp) GetPerson() (v []*Person) {
 	return p.Person
 }
 
@@ -4944,10 +4985,6 @@ var fieldIDToName_SearchForPersonResp = map[int16]string{
 	1: "msg",
 	2: "code",
 	3: "person",
-}
-
-func (p *SearchForPersonResp) IsSetPerson() bool {
-	return p.Person != nil
 }
 
 func (p *SearchForPersonResp) Read(iprot thrift.TProtocol) (err error) {
@@ -4990,7 +5027,7 @@ func (p *SearchForPersonResp) Read(iprot thrift.TProtocol) (err error) {
 				}
 			}
 		case 3:
-			if fieldTypeId == thrift.STRUCT {
+			if fieldTypeId == thrift.LIST {
 				if err = p.ReadField3(iprot); err != nil {
 					goto ReadFieldError
 				}
@@ -5048,8 +5085,20 @@ func (p *SearchForPersonResp) ReadField2(iprot thrift.TProtocol) error {
 }
 
 func (p *SearchForPersonResp) ReadField3(iprot thrift.TProtocol) error {
-	p.Person = NewPerson()
-	if err := p.Person.Read(iprot); err != nil {
+	_, size, err := iprot.ReadListBegin()
+	if err != nil {
+		return err
+	}
+	p.Person = make([]*Person, 0, size)
+	for i := 0; i < size; i++ {
+		_elem := NewPerson()
+		if err := _elem.Read(iprot); err != nil {
+			return err
+		}
+
+		p.Person = append(p.Person, _elem)
+	}
+	if err := iprot.ReadListEnd(); err != nil {
 		return err
 	}
 	return nil
@@ -5127,10 +5176,18 @@ WriteFieldEndError:
 }
 
 func (p *SearchForPersonResp) writeField3(oprot thrift.TProtocol) (err error) {
-	if err = oprot.WriteFieldBegin("person", thrift.STRUCT, 3); err != nil {
+	if err = oprot.WriteFieldBegin("person", thrift.LIST, 3); err != nil {
 		goto WriteFieldBeginError
 	}
-	if err := p.Person.Write(oprot); err != nil {
+	if err := oprot.WriteListBegin(thrift.STRUCT, len(p.Person)); err != nil {
+		return err
+	}
+	for _, v := range p.Person {
+		if err := v.Write(oprot); err != nil {
+			return err
+		}
+	}
+	if err := oprot.WriteListEnd(); err != nil {
 		return err
 	}
 	if err = oprot.WriteFieldEnd(); err != nil {
