@@ -125,3 +125,19 @@ func UpdatePerson(ctx context.Context, c *app.RequestContext) {
 	resp.Code = enum.OK
 	c.JSON(consts.StatusOK, resp)
 }
+
+// SearchForPersonReq .
+// @router /person/search [GET]
+func SearchForPersonReq(ctx context.Context, c *app.RequestContext) {
+	var err error
+	var req example.SearchForPersonReq
+	err = c.BindAndValidate(&req)
+	if err != nil {
+		c.String(consts.StatusBadRequest, err.Error())
+		return
+	}
+
+	resp := new(example.SearchForPersonResp)
+
+	c.JSON(consts.StatusOK, resp)
+}

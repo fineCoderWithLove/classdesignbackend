@@ -26,6 +26,14 @@ func Register(r *server.Hertz) {
 		_person.POST("/add", append(_addpersonMw(), example.AddPerson)...)
 		_person.GET("/del", append(_delpersonMw(), example.DelPerson)...)
 		_person.GET("/details", append(_querypersondetailMw(), example.QueryPersonDetail)...)
+		_person.GET("/search", append(_searchforpersonreqMw(), example.SearchForPersonReq)...)
 		_person.POST("/update", append(_updatepersonMw(), example.UpdatePerson)...)
+	}
+	{
+		_tech := root.Group("/tech", _techMw()...)
+		_tech.GET("/classstu", append(_selectclassstuMw(), example.SelectClassStu)...)
+		_tech.GET("/mycourse", append(_selectmytechcourseMw(), example.SelectMyTechCourse)...)
+		_tech.GET("/queryclass", append(_selectclassbycourseidMw(), example.SelectClassByCourseId)...)
+		_tech.POST("/score", append(_ratescorereqMw(), example.RateScoreReq)...)
 	}
 }

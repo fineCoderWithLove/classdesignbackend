@@ -70,3 +70,33 @@ func _updatepersonMw() []app.HandlerFunc {
 	// your code...
 	return nil
 }
+
+func _searchforpersonreqMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _techMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _selectclassstuMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _selectmytechcourseMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _selectclassbycourseidMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _ratescorereqMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
