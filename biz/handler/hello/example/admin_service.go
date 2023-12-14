@@ -11,6 +11,8 @@ import (
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/protocol/consts"
 	"go.uber.org/zap"
+	"log"
+	"sync"
 	"time"
 )
 
@@ -49,16 +51,21 @@ func QueryPersonDetail(ctx context.Context, c *app.RequestContext) {
 // AddPerson .
 // @router /person/add [GET]
 func AddPerson(ctx context.Context, c *app.RequestContext) {
+	var lock sync.Locker
+	lock.Lock()
+	defer lock.Unlock()
 	var err error
 	var req example.AddStudentReq
 	err = c.BindAndValidate(&req)
+	log.Println(req.Person)
 	timestamp := time.Now().UnixNano() / int64(time.Millisecond)
 	lastTenDigits := fmt.Sprintf("%010d", timestamp)
 	stringLastTenDigits := lastTenDigits[len(lastTenDigits)-10:]
 	err = c.BindAndValidate(&req)
-	user := example.Person{UserName: req.Person.UserName, Password: `123456`, Number: stringLastTenDigits, Role: 1, Gender: req.Person.Gender}
+	user := example.Person{UserName: req.Person.UserName, Password: req.Person.Password, Number: stringLastTenDigits, Role: 1, Gender: req.Person.Gender}
+	log.Println(user)
 	if err != nil {
-		c.String(consts.StatusBadRequest, err.Error())
+		zap.S().Error(err.Error())
 		return
 	}
 	res := db.DB.Table("login").Create(&user)

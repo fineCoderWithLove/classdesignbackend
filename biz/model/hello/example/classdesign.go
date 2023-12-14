@@ -3610,17 +3610,11 @@ func (p *QueryPersonDetailResp) String() string {
 
 // 2.添加学生/老师
 type AddStudentReq struct {
-	// 添加 api 注解为方便进行参数绑定
-	Token  string  `thrift:"token,1" json:"token" query:"token"`
-	Person *Person `thrift:"person,2" json:"person" query:"person"`
+	Person *Person `gorm:"-" thrift:"person,1" json:"person" query:"person"`
 }
 
 func NewAddStudentReq() *AddStudentReq {
 	return &AddStudentReq{}
-}
-
-func (p *AddStudentReq) GetToken() (v string) {
-	return p.Token
 }
 
 var AddStudentReq_Person_DEFAULT *Person
@@ -3633,8 +3627,7 @@ func (p *AddStudentReq) GetPerson() (v *Person) {
 }
 
 var fieldIDToName_AddStudentReq = map[int16]string{
-	1: "token",
-	2: "person",
+	1: "person",
 }
 
 func (p *AddStudentReq) IsSetPerson() bool {
@@ -3661,18 +3654,8 @@ func (p *AddStudentReq) Read(iprot thrift.TProtocol) (err error) {
 
 		switch fieldId {
 		case 1:
-			if fieldTypeId == thrift.STRING {
-				if err = p.ReadField1(iprot); err != nil {
-					goto ReadFieldError
-				}
-			} else {
-				if err = iprot.Skip(fieldTypeId); err != nil {
-					goto SkipFieldError
-				}
-			}
-		case 2:
 			if fieldTypeId == thrift.STRUCT {
-				if err = p.ReadField2(iprot); err != nil {
+				if err = p.ReadField1(iprot); err != nil {
 					goto ReadFieldError
 				}
 			} else {
@@ -3711,15 +3694,6 @@ ReadStructEndError:
 }
 
 func (p *AddStudentReq) ReadField1(iprot thrift.TProtocol) error {
-	if v, err := iprot.ReadString(); err != nil {
-		return err
-	} else {
-		p.Token = v
-	}
-	return nil
-}
-
-func (p *AddStudentReq) ReadField2(iprot thrift.TProtocol) error {
 	p.Person = NewPerson()
 	if err := p.Person.Read(iprot); err != nil {
 		return err
@@ -3735,10 +3709,6 @@ func (p *AddStudentReq) Write(oprot thrift.TProtocol) (err error) {
 	if p != nil {
 		if err = p.writeField1(oprot); err != nil {
 			fieldId = 1
-			goto WriteFieldError
-		}
-		if err = p.writeField2(oprot); err != nil {
-			fieldId = 2
 			goto WriteFieldError
 		}
 
@@ -3761,24 +3731,7 @@ WriteStructEndError:
 }
 
 func (p *AddStudentReq) writeField1(oprot thrift.TProtocol) (err error) {
-	if err = oprot.WriteFieldBegin("token", thrift.STRING, 1); err != nil {
-		goto WriteFieldBeginError
-	}
-	if err := oprot.WriteString(p.Token); err != nil {
-		return err
-	}
-	if err = oprot.WriteFieldEnd(); err != nil {
-		goto WriteFieldEndError
-	}
-	return nil
-WriteFieldBeginError:
-	return thrift.PrependError(fmt.Sprintf("%T write field 1 begin error: ", p), err)
-WriteFieldEndError:
-	return thrift.PrependError(fmt.Sprintf("%T write field 1 end error: ", p), err)
-}
-
-func (p *AddStudentReq) writeField2(oprot thrift.TProtocol) (err error) {
-	if err = oprot.WriteFieldBegin("person", thrift.STRUCT, 2); err != nil {
+	if err = oprot.WriteFieldBegin("person", thrift.STRUCT, 1); err != nil {
 		goto WriteFieldBeginError
 	}
 	if err := p.Person.Write(oprot); err != nil {
@@ -3789,9 +3742,9 @@ func (p *AddStudentReq) writeField2(oprot thrift.TProtocol) (err error) {
 	}
 	return nil
 WriteFieldBeginError:
-	return thrift.PrependError(fmt.Sprintf("%T write field 2 begin error: ", p), err)
+	return thrift.PrependError(fmt.Sprintf("%T write field 1 begin error: ", p), err)
 WriteFieldEndError:
-	return thrift.PrependError(fmt.Sprintf("%T write field 2 end error: ", p), err)
+	return thrift.PrependError(fmt.Sprintf("%T write field 1 end error: ", p), err)
 }
 
 func (p *AddStudentReq) String() string {
@@ -5805,15 +5758,17 @@ func (p *RateItem) String() string {
 }
 
 type Person struct {
-	UserID    int64  `thrift:"user_id,1" form:"user_id" json:"user_id" query:"user_id"`
-	UserName  string `thrift:"user_name,2" form:"user_name" json:"user_name" query:"user_name"`
-	Password  string `thrift:"password,3" form:"password" json:"password" query:"password"`
-	Avatar    string `thrift:"avatar,4" form:"avatar" json:"avatar" query:"avatar"`
-	Role      int64  `thrift:"role,5" form:"role" json:"role" query:"role"`
-	Number    string `thrift:"number,6" form:"number" json:"number" query:"number"`
-	Email     string `thrift:"email,7" form:"email" json:"email" query:"email"`
-	Gender    string `thrift:"gender,8" form:"gender" json:"gender" query:"gender"`
-	FromWhere string `thrift:"from_where,9" form:"from_where" json:"from_where" query:"from_where"`
+	UserID     int64  `thrift:"user_id,1" form:"user_id" json:"user_id" query:"user_id"`
+	UserName   string `thrift:"user_name,2" form:"user_name" json:"user_name" query:"user_name"`
+	Password   string `thrift:"password,3" form:"password" json:"password" query:"password"`
+	Avatar     string `thrift:"avatar,4" form:"avatar" json:"avatar" query:"avatar"`
+	Role       int64  `thrift:"role,5" form:"role" json:"role" query:"role"`
+	Number     string `thrift:"number,6" form:"number" json:"number" query:"number"`
+	Email      string `thrift:"email,7" form:"email" json:"email" query:"email"`
+	Gender     string `thrift:"gender,8" form:"gender" json:"gender" query:"gender"`
+	FromWhere  string `thrift:"from_where,9" form:"from_where" json:"from_where" query:"from_where"`
+	Isshow     bool   `thrift:"isshow,10" form:"isshow" json:"isshow" query:"isshow"`
+	Isshowlock bool   `thrift:"isshowlock,11" form:"isshowlock" json:"isshowlock" query:"isshowlock"`
 }
 
 func NewPerson() *Person {
@@ -5856,16 +5811,26 @@ func (p *Person) GetFromWhere() (v string) {
 	return p.FromWhere
 }
 
+func (p *Person) GetIsshow() (v bool) {
+	return p.Isshow
+}
+
+func (p *Person) GetIsshowlock() (v bool) {
+	return p.Isshowlock
+}
+
 var fieldIDToName_Person = map[int16]string{
-	1: "user_id",
-	2: "user_name",
-	3: "password",
-	4: "avatar",
-	5: "role",
-	6: "number",
-	7: "email",
-	8: "gender",
-	9: "from_where",
+	1:  "user_id",
+	2:  "user_name",
+	3:  "password",
+	4:  "avatar",
+	5:  "role",
+	6:  "number",
+	7:  "email",
+	8:  "gender",
+	9:  "from_where",
+	10: "isshow",
+	11: "isshowlock",
 }
 
 func (p *Person) Read(iprot thrift.TProtocol) (err error) {
@@ -5970,6 +5935,26 @@ func (p *Person) Read(iprot thrift.TProtocol) (err error) {
 		case 9:
 			if fieldTypeId == thrift.STRING {
 				if err = p.ReadField9(iprot); err != nil {
+					goto ReadFieldError
+				}
+			} else {
+				if err = iprot.Skip(fieldTypeId); err != nil {
+					goto SkipFieldError
+				}
+			}
+		case 10:
+			if fieldTypeId == thrift.BOOL {
+				if err = p.ReadField10(iprot); err != nil {
+					goto ReadFieldError
+				}
+			} else {
+				if err = iprot.Skip(fieldTypeId); err != nil {
+					goto SkipFieldError
+				}
+			}
+		case 11:
+			if fieldTypeId == thrift.BOOL {
+				if err = p.ReadField11(iprot); err != nil {
 					goto ReadFieldError
 				}
 			} else {
@@ -6088,6 +6073,24 @@ func (p *Person) ReadField9(iprot thrift.TProtocol) error {
 	return nil
 }
 
+func (p *Person) ReadField10(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadBool(); err != nil {
+		return err
+	} else {
+		p.Isshow = v
+	}
+	return nil
+}
+
+func (p *Person) ReadField11(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadBool(); err != nil {
+		return err
+	} else {
+		p.Isshowlock = v
+	}
+	return nil
+}
+
 func (p *Person) Write(oprot thrift.TProtocol) (err error) {
 	var fieldId int16
 	if err = oprot.WriteStructBegin("Person"); err != nil {
@@ -6128,6 +6131,14 @@ func (p *Person) Write(oprot thrift.TProtocol) (err error) {
 		}
 		if err = p.writeField9(oprot); err != nil {
 			fieldId = 9
+			goto WriteFieldError
+		}
+		if err = p.writeField10(oprot); err != nil {
+			fieldId = 10
+			goto WriteFieldError
+		}
+		if err = p.writeField11(oprot); err != nil {
+			fieldId = 11
 			goto WriteFieldError
 		}
 
@@ -6302,6 +6313,40 @@ WriteFieldEndError:
 	return thrift.PrependError(fmt.Sprintf("%T write field 9 end error: ", p), err)
 }
 
+func (p *Person) writeField10(oprot thrift.TProtocol) (err error) {
+	if err = oprot.WriteFieldBegin("isshow", thrift.BOOL, 10); err != nil {
+		goto WriteFieldBeginError
+	}
+	if err := oprot.WriteBool(p.Isshow); err != nil {
+		return err
+	}
+	if err = oprot.WriteFieldEnd(); err != nil {
+		goto WriteFieldEndError
+	}
+	return nil
+WriteFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 10 begin error: ", p), err)
+WriteFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 10 end error: ", p), err)
+}
+
+func (p *Person) writeField11(oprot thrift.TProtocol) (err error) {
+	if err = oprot.WriteFieldBegin("isshowlock", thrift.BOOL, 11); err != nil {
+		goto WriteFieldBeginError
+	}
+	if err := oprot.WriteBool(p.Isshowlock); err != nil {
+		return err
+	}
+	if err = oprot.WriteFieldEnd(); err != nil {
+		goto WriteFieldEndError
+	}
+	return nil
+WriteFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 11 begin error: ", p), err)
+WriteFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 11 end error: ", p), err)
+}
+
 func (p *Person) String() string {
 	if p == nil {
 		return "<nil>"
@@ -6310,15 +6355,17 @@ func (p *Person) String() string {
 }
 
 type User struct {
-	UserID    int64  `thrift:"user_id,1" form:"user_id" json:"user_id" query:"user_id"`
-	UserName  string `thrift:"user_name,2" form:"user_name" json:"user_name" query:"user_name"`
-	Password  string `thrift:"password,3" form:"password" json:"password" query:"password"`
-	Avatar    string `thrift:"avatar,4" form:"avatar" json:"avatar" query:"avatar"`
-	Role      int64  `thrift:"role,5" form:"role" json:"role" query:"role"`
-	Number    string `thrift:"number,6" form:"number" json:"number" query:"number"`
-	Email     string `thrift:"email,7" form:"email" json:"email" query:"email"`
-	Gender    string `thrift:"gender,8" form:"gender" json:"gender" query:"gender"`
-	FromWhere string `thrift:"from_where,9" form:"from_where" json:"from_where" query:"from_where"`
+	UserID     int64  `thrift:"user_id,1" form:"user_id" json:"user_id" query:"user_id"`
+	UserName   string `thrift:"user_name,2" form:"user_name" json:"user_name" query:"user_name"`
+	Password   string `thrift:"password,3" form:"password" json:"password" query:"password"`
+	Avatar     string `thrift:"avatar,4" form:"avatar" json:"avatar" query:"avatar"`
+	Role       int64  `thrift:"role,5" form:"role" json:"role" query:"role"`
+	Number     string `thrift:"number,6" form:"number" json:"number" query:"number"`
+	Email      string `thrift:"email,7" form:"email" json:"email" query:"email"`
+	Gender     string `thrift:"gender,8" form:"gender" json:"gender" query:"gender"`
+	FromWhere  string `thrift:"from_where,9" form:"from_where" json:"from_where" query:"from_where"`
+	Isshow     bool   `thrift:"isshow,10" form:"isshow" json:"isshow" query:"isshow"`
+	Isshowlock bool   `thrift:"isshowlock,11" form:"isshowlock" json:"isshowlock" query:"isshowlock"`
 }
 
 func NewUser() *User {
@@ -6361,16 +6408,26 @@ func (p *User) GetFromWhere() (v string) {
 	return p.FromWhere
 }
 
+func (p *User) GetIsshow() (v bool) {
+	return p.Isshow
+}
+
+func (p *User) GetIsshowlock() (v bool) {
+	return p.Isshowlock
+}
+
 var fieldIDToName_User = map[int16]string{
-	1: "user_id",
-	2: "user_name",
-	3: "password",
-	4: "avatar",
-	5: "role",
-	6: "number",
-	7: "email",
-	8: "gender",
-	9: "from_where",
+	1:  "user_id",
+	2:  "user_name",
+	3:  "password",
+	4:  "avatar",
+	5:  "role",
+	6:  "number",
+	7:  "email",
+	8:  "gender",
+	9:  "from_where",
+	10: "isshow",
+	11: "isshowlock",
 }
 
 func (p *User) Read(iprot thrift.TProtocol) (err error) {
@@ -6475,6 +6532,26 @@ func (p *User) Read(iprot thrift.TProtocol) (err error) {
 		case 9:
 			if fieldTypeId == thrift.STRING {
 				if err = p.ReadField9(iprot); err != nil {
+					goto ReadFieldError
+				}
+			} else {
+				if err = iprot.Skip(fieldTypeId); err != nil {
+					goto SkipFieldError
+				}
+			}
+		case 10:
+			if fieldTypeId == thrift.BOOL {
+				if err = p.ReadField10(iprot); err != nil {
+					goto ReadFieldError
+				}
+			} else {
+				if err = iprot.Skip(fieldTypeId); err != nil {
+					goto SkipFieldError
+				}
+			}
+		case 11:
+			if fieldTypeId == thrift.BOOL {
+				if err = p.ReadField11(iprot); err != nil {
 					goto ReadFieldError
 				}
 			} else {
@@ -6593,6 +6670,24 @@ func (p *User) ReadField9(iprot thrift.TProtocol) error {
 	return nil
 }
 
+func (p *User) ReadField10(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadBool(); err != nil {
+		return err
+	} else {
+		p.Isshow = v
+	}
+	return nil
+}
+
+func (p *User) ReadField11(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadBool(); err != nil {
+		return err
+	} else {
+		p.Isshowlock = v
+	}
+	return nil
+}
+
 func (p *User) Write(oprot thrift.TProtocol) (err error) {
 	var fieldId int16
 	if err = oprot.WriteStructBegin("User"); err != nil {
@@ -6633,6 +6728,14 @@ func (p *User) Write(oprot thrift.TProtocol) (err error) {
 		}
 		if err = p.writeField9(oprot); err != nil {
 			fieldId = 9
+			goto WriteFieldError
+		}
+		if err = p.writeField10(oprot); err != nil {
+			fieldId = 10
+			goto WriteFieldError
+		}
+		if err = p.writeField11(oprot); err != nil {
+			fieldId = 11
 			goto WriteFieldError
 		}
 
@@ -6807,6 +6910,40 @@ WriteFieldEndError:
 	return thrift.PrependError(fmt.Sprintf("%T write field 9 end error: ", p), err)
 }
 
+func (p *User) writeField10(oprot thrift.TProtocol) (err error) {
+	if err = oprot.WriteFieldBegin("isshow", thrift.BOOL, 10); err != nil {
+		goto WriteFieldBeginError
+	}
+	if err := oprot.WriteBool(p.Isshow); err != nil {
+		return err
+	}
+	if err = oprot.WriteFieldEnd(); err != nil {
+		goto WriteFieldEndError
+	}
+	return nil
+WriteFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 10 begin error: ", p), err)
+WriteFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 10 end error: ", p), err)
+}
+
+func (p *User) writeField11(oprot thrift.TProtocol) (err error) {
+	if err = oprot.WriteFieldBegin("isshowlock", thrift.BOOL, 11); err != nil {
+		goto WriteFieldBeginError
+	}
+	if err := oprot.WriteBool(p.Isshowlock); err != nil {
+		return err
+	}
+	if err = oprot.WriteFieldEnd(); err != nil {
+		goto WriteFieldEndError
+	}
+	return nil
+WriteFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 11 begin error: ", p), err)
+WriteFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 11 end error: ", p), err)
+}
+
 func (p *User) String() string {
 	if p == nil {
 		return "<nil>"
@@ -6815,15 +6952,17 @@ func (p *User) String() string {
 }
 
 type Student struct {
-	UserID    int64  `thrift:"user_id,1" form:"user_id" json:"user_id" query:"user_id"`
-	UserName  string `thrift:"user_name,2" form:"user_name" json:"user_name" query:"user_name"`
-	Password  string `thrift:"password,3" form:"password" json:"password" query:"password"`
-	Avatar    string `thrift:"avatar,4" form:"avatar" json:"avatar" query:"avatar"`
-	Role      int64  `thrift:"role,5" form:"role" json:"role" query:"role"`
-	Number    string `thrift:"number,6" form:"number" json:"number" query:"number"`
-	Email     string `thrift:"email,7" form:"email" json:"email" query:"email"`
-	Gender    string `thrift:"gender,8" form:"gender" json:"gender" query:"gender"`
-	FromWhere string `thrift:"from_where,9" form:"from_where" json:"from_where" query:"from_where"`
+	UserID     int64  `thrift:"user_id,1" form:"user_id" json:"user_id" query:"user_id"`
+	UserName   string `thrift:"user_name,2" form:"user_name" json:"user_name" query:"user_name"`
+	Password   string `thrift:"password,3" form:"password" json:"password" query:"password"`
+	Avatar     string `thrift:"avatar,4" form:"avatar" json:"avatar" query:"avatar"`
+	Role       int64  `thrift:"role,5" form:"role" json:"role" query:"role"`
+	Number     string `thrift:"number,6" form:"number" json:"number" query:"number"`
+	Email      string `thrift:"email,7" form:"email" json:"email" query:"email"`
+	Gender     string `thrift:"gender,8" form:"gender" json:"gender" query:"gender"`
+	FromWhere  string `thrift:"from_where,9" form:"from_where" json:"from_where" query:"from_where"`
+	Isshow     bool   `thrift:"isshow,10" form:"isshow" json:"isshow" query:"isshow"`
+	Isshowlock bool   `thrift:"isshowlock,11" form:"isshowlock" json:"isshowlock" query:"isshowlock"`
 }
 
 func NewStudent() *Student {
@@ -6866,16 +7005,26 @@ func (p *Student) GetFromWhere() (v string) {
 	return p.FromWhere
 }
 
+func (p *Student) GetIsshow() (v bool) {
+	return p.Isshow
+}
+
+func (p *Student) GetIsshowlock() (v bool) {
+	return p.Isshowlock
+}
+
 var fieldIDToName_Student = map[int16]string{
-	1: "user_id",
-	2: "user_name",
-	3: "password",
-	4: "avatar",
-	5: "role",
-	6: "number",
-	7: "email",
-	8: "gender",
-	9: "from_where",
+	1:  "user_id",
+	2:  "user_name",
+	3:  "password",
+	4:  "avatar",
+	5:  "role",
+	6:  "number",
+	7:  "email",
+	8:  "gender",
+	9:  "from_where",
+	10: "isshow",
+	11: "isshowlock",
 }
 
 func (p *Student) Read(iprot thrift.TProtocol) (err error) {
@@ -6980,6 +7129,26 @@ func (p *Student) Read(iprot thrift.TProtocol) (err error) {
 		case 9:
 			if fieldTypeId == thrift.STRING {
 				if err = p.ReadField9(iprot); err != nil {
+					goto ReadFieldError
+				}
+			} else {
+				if err = iprot.Skip(fieldTypeId); err != nil {
+					goto SkipFieldError
+				}
+			}
+		case 10:
+			if fieldTypeId == thrift.BOOL {
+				if err = p.ReadField10(iprot); err != nil {
+					goto ReadFieldError
+				}
+			} else {
+				if err = iprot.Skip(fieldTypeId); err != nil {
+					goto SkipFieldError
+				}
+			}
+		case 11:
+			if fieldTypeId == thrift.BOOL {
+				if err = p.ReadField11(iprot); err != nil {
 					goto ReadFieldError
 				}
 			} else {
@@ -7098,6 +7267,24 @@ func (p *Student) ReadField9(iprot thrift.TProtocol) error {
 	return nil
 }
 
+func (p *Student) ReadField10(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadBool(); err != nil {
+		return err
+	} else {
+		p.Isshow = v
+	}
+	return nil
+}
+
+func (p *Student) ReadField11(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadBool(); err != nil {
+		return err
+	} else {
+		p.Isshowlock = v
+	}
+	return nil
+}
+
 func (p *Student) Write(oprot thrift.TProtocol) (err error) {
 	var fieldId int16
 	if err = oprot.WriteStructBegin("Student"); err != nil {
@@ -7138,6 +7325,14 @@ func (p *Student) Write(oprot thrift.TProtocol) (err error) {
 		}
 		if err = p.writeField9(oprot); err != nil {
 			fieldId = 9
+			goto WriteFieldError
+		}
+		if err = p.writeField10(oprot); err != nil {
+			fieldId = 10
+			goto WriteFieldError
+		}
+		if err = p.writeField11(oprot); err != nil {
+			fieldId = 11
 			goto WriteFieldError
 		}
 
@@ -7312,6 +7507,40 @@ WriteFieldEndError:
 	return thrift.PrependError(fmt.Sprintf("%T write field 9 end error: ", p), err)
 }
 
+func (p *Student) writeField10(oprot thrift.TProtocol) (err error) {
+	if err = oprot.WriteFieldBegin("isshow", thrift.BOOL, 10); err != nil {
+		goto WriteFieldBeginError
+	}
+	if err := oprot.WriteBool(p.Isshow); err != nil {
+		return err
+	}
+	if err = oprot.WriteFieldEnd(); err != nil {
+		goto WriteFieldEndError
+	}
+	return nil
+WriteFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 10 begin error: ", p), err)
+WriteFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 10 end error: ", p), err)
+}
+
+func (p *Student) writeField11(oprot thrift.TProtocol) (err error) {
+	if err = oprot.WriteFieldBegin("isshowlock", thrift.BOOL, 11); err != nil {
+		goto WriteFieldBeginError
+	}
+	if err := oprot.WriteBool(p.Isshowlock); err != nil {
+		return err
+	}
+	if err = oprot.WriteFieldEnd(); err != nil {
+		goto WriteFieldEndError
+	}
+	return nil
+WriteFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 11 begin error: ", p), err)
+WriteFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 11 end error: ", p), err)
+}
+
 func (p *Student) String() string {
 	if p == nil {
 		return "<nil>"
@@ -7320,15 +7549,17 @@ func (p *Student) String() string {
 }
 
 type Teacher struct {
-	UserID    int64  `thrift:"user_id,1" form:"user_id" json:"user_id" query:"user_id"`
-	UserName  string `thrift:"user_name,2" form:"user_name" json:"user_name" query:"user_name"`
-	Password  string `thrift:"password,3" form:"password" json:"password" query:"password"`
-	Avatar    string `thrift:"avatar,4" form:"avatar" json:"avatar" query:"avatar"`
-	Role      int64  `thrift:"role,5" form:"role" json:"role" query:"role"`
-	Number    string `thrift:"number,6" form:"number" json:"number" query:"number"`
-	Email     string `thrift:"email,7" form:"email" json:"email" query:"email"`
-	Gender    string `thrift:"gender,8" form:"gender" json:"gender" query:"gender"`
-	FromWhere string `thrift:"from_where,9" form:"from_where" json:"from_where" query:"from_where"`
+	UserID     int64  `thrift:"user_id,1" form:"user_id" json:"user_id" query:"user_id"`
+	UserName   string `thrift:"user_name,2" form:"user_name" json:"user_name" query:"user_name"`
+	Password   string `thrift:"password,3" form:"password" json:"password" query:"password"`
+	Avatar     string `thrift:"avatar,4" form:"avatar" json:"avatar" query:"avatar"`
+	Role       int64  `thrift:"role,5" form:"role" json:"role" query:"role"`
+	Number     string `thrift:"number,6" form:"number" json:"number" query:"number"`
+	Email      string `thrift:"email,7" form:"email" json:"email" query:"email"`
+	Gender     string `thrift:"gender,8" form:"gender" json:"gender" query:"gender"`
+	FromWhere  string `thrift:"from_where,9" form:"from_where" json:"from_where" query:"from_where"`
+	Isshow     bool   `thrift:"isshow,10" form:"isshow" json:"isshow" query:"isshow"`
+	Isshowlock bool   `thrift:"isshowlock,11" form:"isshowlock" json:"isshowlock" query:"isshowlock"`
 }
 
 func NewTeacher() *Teacher {
@@ -7371,16 +7602,26 @@ func (p *Teacher) GetFromWhere() (v string) {
 	return p.FromWhere
 }
 
+func (p *Teacher) GetIsshow() (v bool) {
+	return p.Isshow
+}
+
+func (p *Teacher) GetIsshowlock() (v bool) {
+	return p.Isshowlock
+}
+
 var fieldIDToName_Teacher = map[int16]string{
-	1: "user_id",
-	2: "user_name",
-	3: "password",
-	4: "avatar",
-	5: "role",
-	6: "number",
-	7: "email",
-	8: "gender",
-	9: "from_where",
+	1:  "user_id",
+	2:  "user_name",
+	3:  "password",
+	4:  "avatar",
+	5:  "role",
+	6:  "number",
+	7:  "email",
+	8:  "gender",
+	9:  "from_where",
+	10: "isshow",
+	11: "isshowlock",
 }
 
 func (p *Teacher) Read(iprot thrift.TProtocol) (err error) {
@@ -7485,6 +7726,26 @@ func (p *Teacher) Read(iprot thrift.TProtocol) (err error) {
 		case 9:
 			if fieldTypeId == thrift.STRING {
 				if err = p.ReadField9(iprot); err != nil {
+					goto ReadFieldError
+				}
+			} else {
+				if err = iprot.Skip(fieldTypeId); err != nil {
+					goto SkipFieldError
+				}
+			}
+		case 10:
+			if fieldTypeId == thrift.BOOL {
+				if err = p.ReadField10(iprot); err != nil {
+					goto ReadFieldError
+				}
+			} else {
+				if err = iprot.Skip(fieldTypeId); err != nil {
+					goto SkipFieldError
+				}
+			}
+		case 11:
+			if fieldTypeId == thrift.BOOL {
+				if err = p.ReadField11(iprot); err != nil {
 					goto ReadFieldError
 				}
 			} else {
@@ -7603,6 +7864,24 @@ func (p *Teacher) ReadField9(iprot thrift.TProtocol) error {
 	return nil
 }
 
+func (p *Teacher) ReadField10(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadBool(); err != nil {
+		return err
+	} else {
+		p.Isshow = v
+	}
+	return nil
+}
+
+func (p *Teacher) ReadField11(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadBool(); err != nil {
+		return err
+	} else {
+		p.Isshowlock = v
+	}
+	return nil
+}
+
 func (p *Teacher) Write(oprot thrift.TProtocol) (err error) {
 	var fieldId int16
 	if err = oprot.WriteStructBegin("Teacher"); err != nil {
@@ -7643,6 +7922,14 @@ func (p *Teacher) Write(oprot thrift.TProtocol) (err error) {
 		}
 		if err = p.writeField9(oprot); err != nil {
 			fieldId = 9
+			goto WriteFieldError
+		}
+		if err = p.writeField10(oprot); err != nil {
+			fieldId = 10
+			goto WriteFieldError
+		}
+		if err = p.writeField11(oprot); err != nil {
+			fieldId = 11
 			goto WriteFieldError
 		}
 
@@ -7817,6 +8104,40 @@ WriteFieldEndError:
 	return thrift.PrependError(fmt.Sprintf("%T write field 9 end error: ", p), err)
 }
 
+func (p *Teacher) writeField10(oprot thrift.TProtocol) (err error) {
+	if err = oprot.WriteFieldBegin("isshow", thrift.BOOL, 10); err != nil {
+		goto WriteFieldBeginError
+	}
+	if err := oprot.WriteBool(p.Isshow); err != nil {
+		return err
+	}
+	if err = oprot.WriteFieldEnd(); err != nil {
+		goto WriteFieldEndError
+	}
+	return nil
+WriteFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 10 begin error: ", p), err)
+WriteFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 10 end error: ", p), err)
+}
+
+func (p *Teacher) writeField11(oprot thrift.TProtocol) (err error) {
+	if err = oprot.WriteFieldBegin("isshowlock", thrift.BOOL, 11); err != nil {
+		goto WriteFieldBeginError
+	}
+	if err := oprot.WriteBool(p.Isshowlock); err != nil {
+		return err
+	}
+	if err = oprot.WriteFieldEnd(); err != nil {
+		goto WriteFieldEndError
+	}
+	return nil
+WriteFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 11 begin error: ", p), err)
+WriteFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 11 end error: ", p), err)
+}
+
 func (p *Teacher) String() string {
 	if p == nil {
 		return "<nil>"
@@ -7825,15 +8146,17 @@ func (p *Teacher) String() string {
 }
 
 type Admin struct {
-	UserID    int64  `thrift:"user_id,1" form:"user_id" json:"user_id" query:"user_id"`
-	UserName  string `thrift:"user_name,2" form:"user_name" json:"user_name" query:"user_name"`
-	Password  string `thrift:"password,3" form:"password" json:"password" query:"password"`
-	Avatar    string `thrift:"avatar,4" form:"avatar" json:"avatar" query:"avatar"`
-	Role      int64  `thrift:"role,5" form:"role" json:"role" query:"role"`
-	Number    string `thrift:"number,6" form:"number" json:"number" query:"number"`
-	Email     string `thrift:"email,7" form:"email" json:"email" query:"email"`
-	Gender    string `thrift:"gender,8" form:"gender" json:"gender" query:"gender"`
-	FromWhere string `thrift:"from_where,9" form:"from_where" json:"from_where" query:"from_where"`
+	UserID     int64  `thrift:"user_id,1" form:"user_id" json:"user_id" query:"user_id"`
+	UserName   string `thrift:"user_name,2" form:"user_name" json:"user_name" query:"user_name"`
+	Password   string `thrift:"password,3" form:"password" json:"password" query:"password"`
+	Avatar     string `thrift:"avatar,4" form:"avatar" json:"avatar" query:"avatar"`
+	Role       int64  `thrift:"role,5" form:"role" json:"role" query:"role"`
+	Number     string `thrift:"number,6" form:"number" json:"number" query:"number"`
+	Email      string `thrift:"email,7" form:"email" json:"email" query:"email"`
+	Gender     string `thrift:"gender,8" form:"gender" json:"gender" query:"gender"`
+	FromWhere  string `thrift:"from_where,9" form:"from_where" json:"from_where" query:"from_where"`
+	Isshow     bool   `thrift:"isshow,10" form:"isshow" json:"isshow" query:"isshow"`
+	Isshowlock bool   `thrift:"isshowlock,11" form:"isshowlock" json:"isshowlock" query:"isshowlock"`
 }
 
 func NewAdmin() *Admin {
@@ -7876,16 +8199,26 @@ func (p *Admin) GetFromWhere() (v string) {
 	return p.FromWhere
 }
 
+func (p *Admin) GetIsshow() (v bool) {
+	return p.Isshow
+}
+
+func (p *Admin) GetIsshowlock() (v bool) {
+	return p.Isshowlock
+}
+
 var fieldIDToName_Admin = map[int16]string{
-	1: "user_id",
-	2: "user_name",
-	3: "password",
-	4: "avatar",
-	5: "role",
-	6: "number",
-	7: "email",
-	8: "gender",
-	9: "from_where",
+	1:  "user_id",
+	2:  "user_name",
+	3:  "password",
+	4:  "avatar",
+	5:  "role",
+	6:  "number",
+	7:  "email",
+	8:  "gender",
+	9:  "from_where",
+	10: "isshow",
+	11: "isshowlock",
 }
 
 func (p *Admin) Read(iprot thrift.TProtocol) (err error) {
@@ -7990,6 +8323,26 @@ func (p *Admin) Read(iprot thrift.TProtocol) (err error) {
 		case 9:
 			if fieldTypeId == thrift.STRING {
 				if err = p.ReadField9(iprot); err != nil {
+					goto ReadFieldError
+				}
+			} else {
+				if err = iprot.Skip(fieldTypeId); err != nil {
+					goto SkipFieldError
+				}
+			}
+		case 10:
+			if fieldTypeId == thrift.BOOL {
+				if err = p.ReadField10(iprot); err != nil {
+					goto ReadFieldError
+				}
+			} else {
+				if err = iprot.Skip(fieldTypeId); err != nil {
+					goto SkipFieldError
+				}
+			}
+		case 11:
+			if fieldTypeId == thrift.BOOL {
+				if err = p.ReadField11(iprot); err != nil {
 					goto ReadFieldError
 				}
 			} else {
@@ -8108,6 +8461,24 @@ func (p *Admin) ReadField9(iprot thrift.TProtocol) error {
 	return nil
 }
 
+func (p *Admin) ReadField10(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadBool(); err != nil {
+		return err
+	} else {
+		p.Isshow = v
+	}
+	return nil
+}
+
+func (p *Admin) ReadField11(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadBool(); err != nil {
+		return err
+	} else {
+		p.Isshowlock = v
+	}
+	return nil
+}
+
 func (p *Admin) Write(oprot thrift.TProtocol) (err error) {
 	var fieldId int16
 	if err = oprot.WriteStructBegin("Admin"); err != nil {
@@ -8148,6 +8519,14 @@ func (p *Admin) Write(oprot thrift.TProtocol) (err error) {
 		}
 		if err = p.writeField9(oprot); err != nil {
 			fieldId = 9
+			goto WriteFieldError
+		}
+		if err = p.writeField10(oprot); err != nil {
+			fieldId = 10
+			goto WriteFieldError
+		}
+		if err = p.writeField11(oprot); err != nil {
+			fieldId = 11
 			goto WriteFieldError
 		}
 
@@ -8320,6 +8699,40 @@ WriteFieldBeginError:
 	return thrift.PrependError(fmt.Sprintf("%T write field 9 begin error: ", p), err)
 WriteFieldEndError:
 	return thrift.PrependError(fmt.Sprintf("%T write field 9 end error: ", p), err)
+}
+
+func (p *Admin) writeField10(oprot thrift.TProtocol) (err error) {
+	if err = oprot.WriteFieldBegin("isshow", thrift.BOOL, 10); err != nil {
+		goto WriteFieldBeginError
+	}
+	if err := oprot.WriteBool(p.Isshow); err != nil {
+		return err
+	}
+	if err = oprot.WriteFieldEnd(); err != nil {
+		goto WriteFieldEndError
+	}
+	return nil
+WriteFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 10 begin error: ", p), err)
+WriteFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 10 end error: ", p), err)
+}
+
+func (p *Admin) writeField11(oprot thrift.TProtocol) (err error) {
+	if err = oprot.WriteFieldBegin("isshowlock", thrift.BOOL, 11); err != nil {
+		goto WriteFieldBeginError
+	}
+	if err := oprot.WriteBool(p.Isshowlock); err != nil {
+		return err
+	}
+	if err = oprot.WriteFieldEnd(); err != nil {
+		goto WriteFieldEndError
+	}
+	return nil
+WriteFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 11 begin error: ", p), err)
+WriteFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 11 end error: ", p), err)
 }
 
 func (p *Admin) String() string {
