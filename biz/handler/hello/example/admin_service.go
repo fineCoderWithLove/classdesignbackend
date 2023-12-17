@@ -46,23 +46,30 @@ func QueryPersonDetail(ctx context.Context, c *app.RequestContext) {
 }
 
 /*
-	删除老师或者学生只需要通过权限来判断
+删除老师或者学生只需要通过权限来判断
 */
+var (
+	mutex sync.Mutex
+)
+
 // AddPerson .
 // @router /person/add [GET]
 func AddPerson(ctx context.Context, c *app.RequestContext) {
-	var lock sync.Locker
-	lock.Lock()
-	defer lock.Unlock()
 	var err error
 	var req example.AddStudentReq
 	err = c.BindAndValidate(&req)
-	log.Println(req.Person)
+	// 加锁，确保同一时间只有一个goroutine可以生成时间戳
 	timestamp := time.Now().UnixNano() / int64(time.Millisecond)
 	lastTenDigits := fmt.Sprintf("%010d", timestamp)
 	stringLastTenDigits := lastTenDigits[len(lastTenDigits)-10:]
 	err = c.BindAndValidate(&req)
-	user := example.Person{UserName: req.Person.UserName, Password: req.Person.Password, Number: stringLastTenDigits, Role: 1, Gender: req.Person.Gender}
+	user := example.Person{}
+	if req.Role == "1" {
+		user = example.Person{UserName: req.Person.UserName, Password: req.Person.Password, Number: stringLastTenDigits, Role: 1, Gender: req.Person.Gender, FromWhere: req.Person.FromWhere, Email: req.Person.Email, Tel: req.Person.Tel}
+	}
+	if req.Role == "2" {
+		user = example.Person{UserName: req.Person.UserName, Password: req.Person.Password, Number: stringLastTenDigits, Role: 2, Gender: req.Person.Gender, FromWhere: req.Person.FromWhere, Email: req.Person.Email, Tel: req.Person.Tel}
+	}
 	log.Println(user)
 	if err != nil {
 		zap.S().Error(err.Error())

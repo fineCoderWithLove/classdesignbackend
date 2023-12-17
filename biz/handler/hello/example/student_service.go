@@ -97,14 +97,13 @@ func Register(ctx context.Context, c *app.RequestContext) {
 func QueryStudents(ctx context.Context, c *app.RequestContext) {
 	var err error
 	var req example.QueryAllStudentsReq
-
 	err = c.BindAndValidate(&req)
 	if err != nil {
 		c.String(consts.StatusBadRequest, err.Error())
 		return
 	}
 	resp := new(example.QueryAllStudentsResp)
-	res := db.DB.Table("login").Where("role = ?", 1).Find(&resp.Students)
+	res := db.DB.Table("login").Where("role = ?", req.Role).Find(&resp.Students)
 	if res.RowsAffected == 0 {
 		zap.S().Error(enum.SystemError)
 		c.JSON(consts.StatusOK, example.QueryPersonDetailResp{

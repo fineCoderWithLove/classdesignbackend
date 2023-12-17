@@ -34,6 +34,7 @@ struct RegisterResp {
 //3.查询所有学生
 struct QueryAllStudentsReq {
     1: string token (api.query="token"); // 添加 api 注解为方便进行参数绑定
+    2: string role (api.query="role");
 }
 
 struct QueryAllStudentsResp {
@@ -119,8 +120,9 @@ service TeacherService {
  }
  //2.添加学生/老师
   struct AddStudentReq {
-
       1: Person person (api.query="person");
+      2: string role (api.query="role");
+
   }
 
   struct AddStudentResp {
@@ -193,6 +195,7 @@ service TeacherService {
       9:string from_where;
       10:bool isshow;
           11:bool isshowlock;
+              12:string tel;
   }
  struct User {
      1:i64 user_id;
@@ -206,6 +209,7 @@ service TeacherService {
      9:string from_where;
       10:bool isshow;
           11:bool isshowlock;
+              12:string tel;
  }
 struct Student {
     1:i64 user_id;
@@ -219,6 +223,7 @@ struct Student {
     9:string from_where;
       10:bool isshow;
           11:bool isshowlock;
+              12:string tel;
 }
 struct Teacher {
     1:i64 user_id;
@@ -232,6 +237,7 @@ struct Teacher {
     9:string from_where;
       10:bool isshow;
           11:bool isshowlock;
+              12:string tel;
 }
 struct Admin {
     1:i64 user_id;
@@ -245,4 +251,5 @@ struct Admin {
     9:string from_where;
     10:bool isshow;
     11:bool isshowlock;
+    12:string tel;
 }
