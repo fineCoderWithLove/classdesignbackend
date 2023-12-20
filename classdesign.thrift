@@ -98,12 +98,14 @@ struct SelectClassByCourseIdResp {
 struct SelectClassStuReq {
     1: string token (api.get="token"); // 添加 api 注解为方便进行参数绑定
     2: string from_where (api.get="fromWhere");
+    3: string course_id (api.get="courseId");
+    4: string user_id (api.get="userId");
 }
 
 struct SelectClassStuResp {
     1: string msg;
     2: i64 code;
-    3: list<RateItem> rateItem;
+    3: list<TotalItem> totalItem;
 }
 service TeacherService {
     RateScoreResp RateScore(1: RateScoreReq request) (api.post="/tech/score");
@@ -184,6 +186,23 @@ service TeacherService {
        2:string course_name;
  }
 
+struct TotalItem {
+          1:i64 user_id;
+          2:string  course_name;
+          3:string  user_name;
+          4:string course_total_score;
+          5:string course_test;
+          6:string course_normal;
+          7:i64 course_id;
+          8:string number;
+          9:string email;
+          10:string gender;
+          11:string from_where;
+          12:bool isshow;
+          13:bool isshowlock;
+          14:string tel;
+}
+
  // 仅仅供评分的一个item
   struct RateItem {
       1:i64 user_id;
@@ -206,8 +225,8 @@ service TeacherService {
       8:string gender;
       9:string from_where;
       10:bool isshow;
-          11:bool isshowlock;
-              12:string tel;
+      11:bool isshowlock;
+      12:string tel;
   }
  struct User {
      1:i64 user_id;

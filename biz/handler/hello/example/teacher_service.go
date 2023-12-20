@@ -79,13 +79,12 @@ func SelectClassStu(ctx context.Context, c *app.RequestContext) {
 		return
 	}
 	resp := new(example.SelectClassStuResp)
-	res := db.DB.Table("login").
-		Select("login.user_id,login.number, course.course_name, login.user_name, stuchoose.course_total_score, stuchoose.course_test, stuchoose.course_normal, stuchoose.course_id").
-		Joins("LEFT JOIN stuchoose ON login.user_id = stuchoose.user_id").
-		Joins("LEFT JOIN teachertech ON login.user_id = teachertech.user_id").
-		Joins("LEFT JOIN course ON stuchoose.course_id = course.course_id").
-		Where("login.from_where = ? and role = 1", req.FromWhere).
-		Find(&resp.RateItem)
+	res := db.DB.Table("stuchoose").
+		Select("stuchoose.*, login.*").
+		Joins("INNER JOIN login ON stuchoose.user_id = login.user_id").
+		Where("stuchoose.course_id = ? AND stuchoose.from_where = ?", req.CourseID, req.FromWhere).
+		Where("EXISTS (SELECT 1 FROM teachertech WHERE teachertech.user_id = ? AND teachertech.course_id = stuchoose.course_id)", req.UserID).
+		Find(&resp.TotalItem)
 	if res.RowsAffected == 0 {
 		resp.Msg = "没有此班级"
 		resp.Code = enum.Error
