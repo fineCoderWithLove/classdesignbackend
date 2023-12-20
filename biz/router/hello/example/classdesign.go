@@ -19,6 +19,7 @@ func Register(r *server.Hertz) {
 	root := r.Group("/", rootMw()...)
 	root.GET("/hello", append(_helloMw(), example.Hello)...)
 	root.GET("/login", append(_loginMw(), example.Login)...)
+	root.GET("/querymyscore", append(_querymyscoreMw(), example.QueryMyScore)...)
 	root.GET("/querystudents", append(_querystudentsMw(), example.QueryStudents)...)
 	root.GET("/register", append(_registerMw(), example.Register)...)
 	{

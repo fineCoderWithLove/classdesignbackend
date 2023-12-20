@@ -25,11 +25,15 @@ func SelectMyTechCourse(ctx context.Context, c *app.RequestContext) {
 		return
 	}
 	resp := new(example.SelectMyTechCourseResp)
-	subQuery := db.DB.Table("teachertech").Select("course_id").Where("user_id = ?", c.Query("userId"))
-	res := db.DB.Table("course").Where("course_id in (?)", subQuery).Find(&resp.Course)
+	res := db.DB.Table("course").
+		Select("course.course_id, course.course_name").
+		Joins("JOIN teachertech ON course.course_id = teachertech.course_id").
+		Joins("JOIN login ON teachertech.user_id = login.user_id").
+		Where("login.number = ?", req.Number).
+		Scan(&resp.Course)
 	if res.RowsAffected == 0 {
-		resp.Msg = enum.SystemError
-		resp.Code = enum.OK
+		resp.Msg = "未查询到该教师"
+		resp.Code = 500
 		resp.Course = nil
 		c.JSON(consts.StatusOK, resp)
 		return
@@ -76,14 +80,14 @@ func SelectClassStu(ctx context.Context, c *app.RequestContext) {
 	}
 	resp := new(example.SelectClassStuResp)
 	res := db.DB.Table("login").
-		Select("login.user_id, course.course_name, login.user_name, stuchoose.course_total_score, stuchoose.course_test, stuchoose.course_normal, stuchoose.course_id").
+		Select("login.user_id,login.number, course.course_name, login.user_name, stuchoose.course_total_score, stuchoose.course_test, stuchoose.course_normal, stuchoose.course_id").
 		Joins("LEFT JOIN stuchoose ON login.user_id = stuchoose.user_id").
 		Joins("LEFT JOIN teachertech ON login.user_id = teachertech.user_id").
 		Joins("LEFT JOIN course ON stuchoose.course_id = course.course_id").
-		Where("login.from_where = ?", req.FromWhere).
+		Where("login.from_where = ? and role = 1", req.FromWhere).
 		Find(&resp.RateItem)
 	if res.RowsAffected == 0 {
-		resp.Msg = enum.SystemError
+		resp.Msg = "没有此班级"
 		resp.Code = enum.Error
 		c.JSON(consts.StatusOK, resp)
 		return
@@ -113,7 +117,7 @@ func RateScore(ctx context.Context, c *app.RequestContext) {
 			"course_normal":      req.RateItem.CourseNormal,
 		})
 	if res.RowsAffected == 0 {
-		resp.Msg = enum.SystemError
+		resp.Msg = "学生不存在"
 		resp.Code = enum.Error
 		c.JSON(consts.StatusOK, resp)
 		return

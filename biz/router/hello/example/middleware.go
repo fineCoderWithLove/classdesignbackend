@@ -105,3 +105,8 @@ func _ratescoreMw() []app.HandlerFunc {
 	// your code...
 	return nil
 }
+
+func _querymyscoreMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}

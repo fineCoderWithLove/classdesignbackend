@@ -45,18 +45,21 @@ func Login(ctx context.Context, c *app.RequestContext) {
 	resp := example.LoginResp{
 		Msg:   enum.Success,
 		Code:  enum.OK,
-		Token: "",
+		Token: "asdhuifdaskldf2asflkasfl",
 	}
-	res := db.DB.Table("login").Where("number = ? and password = ?", req.Number, req.Password).Find(&example.User{})
+	user := example.User{}
+	res := db.DB.Table("login").Where("number = ? and password = ?", req.Number, req.Password).Find(&user)
 	if res.RowsAffected == 0 {
 		zap.S().Error(enum.NoUserID)
 		c.JSON(consts.StatusOK, example.LoginResp{
 			Msg:   enum.Fail,
 			Code:  enum.Error,
 			Token: "",
+			User:  &user,
 		})
 		return
 	}
+	resp.User = &user
 	c.JSON(consts.StatusOK, resp)
 }
 
@@ -116,5 +119,38 @@ func QueryStudents(ctx context.Context, c *app.RequestContext) {
 	//success
 	resp.Msg = enum.Success
 	resp.Code = enum.OK
+	c.JSON(consts.StatusOK, resp)
+}
+
+// QueryMyScore .
+// @router /querymyscore [GET]
+func QueryMyScore(ctx context.Context, c *app.RequestContext) {
+	var err error
+	var req example.QueryMyScoreReq
+	err = c.BindAndValidate(&req)
+	if err != nil {
+		c.String(consts.StatusBadRequest, err.Error())
+		return
+	}
+	resp := new(example.QueryMyScoreResp)
+	rateitem := []*example.RateItem{}
+	result := db.DB.Table("login").
+		Select("login.user_id, course.course_name, t.user_name, stuchoose.course_total_score, stuchoose.course_test, stuchoose.course_normal, stuchoose.course_id").
+		Joins("JOIN stuchoose ON login.user_id = stuchoose.user_id").
+		Joins("JOIN course ON stuchoose.course_id = course.course_id").
+		Joins("JOIN teachertech ON course.course_id = teachertech.course_id").
+		Joins("JOIN login AS t ON teachertech.user_id = t.user_id").
+		Where("login.number = ?", req.Number).
+		Find(&rateitem)
+	if result.RowsAffected == 0 {
+		resp.Msg = enum.SystemError
+		resp.Code = enum.Error
+		resp.RateItems = nil
+		c.JSON(consts.StatusOK, resp)
+		return
+	}
+	resp.Msg = enum.Success
+	resp.Code = enum.OK
+	resp.RateItems = rateitem
 	c.JSON(consts.StatusOK, resp)
 }

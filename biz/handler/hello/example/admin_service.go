@@ -22,6 +22,7 @@ func QueryPersonDetail(ctx context.Context, c *app.RequestContext) {
 	var err error
 	var req example.QueryPersonDetailReq
 	err = c.BindAndValidate(&req)
+	log.Println(req)
 	//参数校验
 	if err != nil {
 		c.String(consts.StatusBadRequest, err.Error())
@@ -32,7 +33,7 @@ func QueryPersonDetail(ctx context.Context, c *app.RequestContext) {
 		Code: enum.OK,
 		User: nil,
 	}
-	res := db.DB.Table("login").Where("user_id = ?", req.UserID).Find(&resp.User)
+	res := db.DB.Table("login").Where("number = ?", req.UserID).Find(&resp.User)
 	if res.RowsAffected == 0 {
 		zap.S().Error(enum.NoUserID)
 		c.JSON(consts.StatusOK, example.QueryPersonDetailResp{
@@ -181,5 +182,7 @@ func SearchForPersonReq(ctx context.Context, c *app.RequestContext) {
 		resp.Msg = enum.Success
 		resp.Code = enum.OK
 	}
+	resp.Msg = enum.Success
+	resp.Code = enum.OK
 	c.JSON(consts.StatusOK, resp)
 }

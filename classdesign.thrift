@@ -19,6 +19,7 @@ struct LoginResp {
     1: string msg;
     2: i64 code;
     3: string token;
+    4: User user;
 }
 //2注册的请求
 struct RegisterReq {
@@ -42,12 +43,23 @@ struct QueryAllStudentsResp {
     2: i64 code;
     3: list<Student> students;
 }
+//4.查询自己的所有成绩
+struct QueryMyScoreReq {
+    1: string number (api.query="number"); // 添加 api 注解为方便进行参数绑定
+}
+
+struct QueryMyScoreResp {
+    1: string msg;
+    2: i64 code;
+    3: list<RateItem> rateItems;
+}
 //=======================================>1.学生的服务的服务信息<=============================================================
 service StudentService {
     HelloResp Hello(1: HelloReq request) (api.get="/hello");
     LoginResp  Login(1: LoginReq request) (api.get="/login");
     RegisterResp  Register(1: RegisterReq request) (api.get="/register");
     QueryAllStudentsResp  QueryStudents(1: QueryAllStudentsReq request) (api.get="/querystudents");
+    QueryMyScoreResp  QueryMyScore(1: QueryMyScoreReq request) (api.get="/querymyscore");
 }
 //=======================================>2.老师的服务信息<=============================================================
 //1.update某学生评分
@@ -63,7 +75,7 @@ struct RateScoreResp {
 //2.查询自己所带的课程
 struct SelectMyTechCourseReq {
     1: string token (api.get="token"); // 添加 api 注解为方便进行参数绑定
-    2: i64 user_id (api.get="userId");
+    2: i64 number (api.get="number");
 }
 
 struct SelectMyTechCourseResp {
@@ -176,12 +188,12 @@ service TeacherService {
   struct RateItem {
       1:i64 user_id;
       2:string  course_name;
-      3:string  user_name;
+      3:string  user_name;      //为代课老师的姓名
       4:string course_total_score;
       5:string course_test;
       6:string course_normal;
       7:i64 course_id;
-
+      8:string number;
   }
   struct Person {
       1:i64 user_id;
